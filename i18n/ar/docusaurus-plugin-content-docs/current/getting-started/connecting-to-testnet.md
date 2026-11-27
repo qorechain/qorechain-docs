@@ -28,6 +28,8 @@ sidebar_position: 4
 
 يمكن الحصول على QOR الخاص بشبكة الاختبار من [صنبور لوحة التحكم](/dashboard/faucet)، الذي يمكنه أيضًا إرسال [رموز Fest الاختبارية](/dashboard/faucet#fest-tokens) الخاصة بشبكة الاختبار فقط (fUSD وfETH وfBTC؛ بلا قيمة).
 
+يوجد للشبكة التجريبية EVM JSON-RPC عام واحد. للتحقق من النتائج بشكل مستقل، شغّل عقدتك الخاصة: انظر [الأسئلة الشائعة](/appendix/faq#testnet-second-evm-rpc).
+
 المضيفون العامون مشتركون ولذلك تسري عليهم حدود (معدل الطلبات وأحجام SVM RPC ومرشحات EVM)؛ ويمر `eth_call` وتقدير الغاز عبر مضيف EVM JSON-RPC. راجع [الحدود على نقاط النهاية العامة](/appendix/networks#public-limits).
 
 ---

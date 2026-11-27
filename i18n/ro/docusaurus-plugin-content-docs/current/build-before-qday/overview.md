@@ -104,6 +104,28 @@ Citește o singură dată [Înainte de a începe: instrumente și un portofel de
 3. Încearcă una dintre aplicațiile de exemplu din tabelul de mai sus.
 4. Dacă nu ai mai implementat niciodată pe QoreChain, [Implementare în 5 minute](/getting-started/deploy-in-5-minutes) explică ideea în profunzime. Kiturile din spatele aplicațiilor sunt pe pagina [Kituri](/build-before-qday/workshop-1/kits).
 
+## Întrebări pe care le pun builderii {#builder-questions}
+
+Regulile complete sunt pe pagina Rules a site-ului [build.qorechain.io](https://build.qorechain.io), iar la mai multe întrebări se răspunde în FAQ-ul de acolo.
+
+### Trebuie ca repository-ul meu să fie public? {#faq-public-repo}
+
+Da. Un repository privat, inclusiv unul partajat cu un singur cont, nu trece verificările de trimitere. Până la termen, 2 decembrie 2026, ora 23:59 UTC, repository-ul trebuie să fie public pe GitHub, sub licența MIT sau Apache-2.0, cu fișierul de licență în el. Îl poți ține privat cât construiești și îl poți face public înainte de a trimite proiectul. Nu face niciodată commit cu chei, fraze seed sau fișiere `.env`.
+
+### Proiectul meu este el însuși un portofel. Mai trebuie să conecteze QoreX pentru Quantum Pass? {#faq-wallet-project}
+
+Da. Quantum Pass îți cere să conectezi QoreX, așa că adaugă QoreX ca opțiune de conectare lângă propriul tău portofel și lasă utilizatorii să aleagă oricare dintre ele. Trimite prin QoreX tranzacția semnată hibrid cerută de pass.
+
+QoreX oferă `window.qorex.native` pentru tranzacții QoreChain Native și `window.qorex.evm`, un provider EIP-1193 care este anunțat și prin EIP-6963, cu `rdns` `network.qore.qorex`. QoreX nu setează niciodată `window.keplr`, așa că detectează `window.qorex`. Pe testnet folosește chain id-ul `qorechain-diana` (EVM chain ID 9800). Vezi [Integrează un dApp cu QoreX](/qorex/dapp-integration).
+
+### Mi-am construit aplicația înainte de a rula create-qorechain-dapp. Cum arăt că l-am folosit? {#faq-starter}
+
+Adaugă aplicația generată în repository-ul tău. Pune rezultatul `create-qorechain-dapp` într-un folder separat (de exemplu `apps/web`), păstrează-i structura și fă ca aplicația să conecteze QoreX și să trimită tranzacția semnată hibrid. Menționează în README numele folderului și comanda pe care ai rulat-o. Jurații verifică manual folosirea `create-qorechain-dapp`, așa că o aplicație generată pe care o pot vedea este cea mai sigură dovadă. Mutarea apelurilor SDK într-o aplicație existentă este în regulă, dar singură nu arată că ai folosit starterul.
+
+### Mi-am implementat contractul de pe o altă adresă decât adresa QoreX cu care m-am înscris. Este o problemă? {#faq-other-address}
+
+Nu. Adresa QoreX legată dovedește înscrierea ta. Nu trebuie să o schimbi, iar un cont de testnet creat din linia de comandă este în regulă pentru implementare. Ship Weeks și verificările proiectului se uită la adresa ta legată și la fiecare adresă `qor1` listată pe pagina proiectului. Adaugă adresa de pe care ai făcut implementarea la **Adrese de testnet** pe pagina proiectului, apoi apasă **Verifică din nou**. O tranzacție de pe o adresă care nu este listată nu se numără. Premiile nu se plătesc pe adresa legată: câștigătorilor li se cere un portofel de plată când se plătesc premiile.
+
 ## Codul {#code}
 
 Toate aplicațiile de exemplu sunt într-un singur depozit public, în folderele `workshop-1`, `workshop-2`, `workshop-3` și `workshop-4`: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Fiecare tutorial îți spune ce folder să deschizi. Obține codul o singură dată cu:

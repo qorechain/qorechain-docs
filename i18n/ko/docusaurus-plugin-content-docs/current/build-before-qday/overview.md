@@ -104,6 +104,28 @@ sidebar_position: 1
 3. 위 표의 예제 앱 중 하나를 해 봅니다.
 4. QoreChain에 배포해 본 적이 없다면 [5분 만에 배포하기](/getting-started/deploy-in-5-minutes)가 개념을 자세히 설명합니다. 앱의 바탕이 되는 키트는 [키트](/build-before-qday/workshop-1/kits) 페이지에 있습니다.
 
+## 빌더들이 자주 묻는 질문 {#builder-questions}
+
+전체 규칙은 [build.qorechain.io](https://build.qorechain.io)의 규칙 페이지에 있으며, 더 많은 질문에 대한 답변은 그곳의 FAQ에 있습니다.
+
+### 저장소를 공개해야 하나요? {#faq-public-repo}
+
+네. 비공개 저장소는 계정 하나와만 공유한 경우를 포함해 제출 검사를 통과하지 못합니다. 마감인 2026년 12월 2일 23:59 UTC까지 저장소는 MIT 또는 Apache-2.0 라이선스로 GitHub에 공개되어 있어야 하며, 라이선스 파일이 포함되어 있어야 합니다. 빌드하는 동안에는 비공개로 두었다가 제출하기 전에 공개해도 됩니다. 키, 시드 문구, `.env` 파일은 절대 커밋하지 마세요.
+
+### 제 프로젝트는 자체 지갑입니다. 그래도 Quantum Pass를 위해 QoreX를 연결해야 하나요? {#faq-wallet-project}
+
+네. Quantum Pass는 QoreX 연결을 요구하므로, 자체 지갑 옆에 QoreX를 연결 옵션으로 추가하고 사용자가 둘 중 하나를 고를 수 있게 하세요. 패스의 하이브리드 서명 트랜잭션은 QoreX를 통해 보내세요.
+
+QoreX는 QoreChain Native 트랜잭션용 `window.qorex.native`와 `window.qorex.evm`을 제공합니다. `window.qorex.evm`은 EIP-1193 프로바이더이며, `rdns` `network.qore.qorex`로 EIP-6963을 통해서도 알려집니다. QoreX는 `window.keplr`를 설정하지 않으므로 `window.qorex`를 감지하세요. 테스트넷에서는 체인 ID `qorechain-diana`(EVM 체인 ID 9800)를 사용하세요. [dApp 연동](/qorex/dapp-integration)을 참조하세요.
+
+### create-qorechain-dapp을 실행하기 전에 앱을 만들었습니다. 사용했다는 것을 어떻게 보여 주나요? {#faq-starter}
+
+생성한 앱을 저장소에 추가하세요. `create-qorechain-dapp`의 결과물을 별도의 폴더(예: `apps/web`)에 넣고 구조를 유지한 채, QoreX를 연결하고 하이브리드 서명 트랜잭션을 보내도록 만드세요. README에 폴더 이름과 실행한 명령을 적으세요. 심사위원은 `create-qorechain-dapp` 사용 여부를 직접 확인하므로, 심사위원이 볼 수 있는 생성된 앱이 가장 확실한 증거입니다. SDK 호출을 기존 앱으로 옮겨도 괜찮지만, 그것만으로는 스타터를 사용했다는 것이 드러나지 않습니다.
+
+### 등록할 때 사용한 QoreX 주소와 다른 주소에서 컨트랙트를 배포했습니다. 문제가 되나요? {#faq-other-address}
+
+아니요. 연결된 QoreX 주소는 등록을 증명합니다. 바꿀 필요가 없으며, 명령줄에서 만든 테스트넷 계정으로 배포해도 괜찮습니다. Ship Weeks와 프로젝트 검사는 연결된 주소와 프로젝트 페이지에 등록된 모든 `qor1` 주소를 확인합니다. 배포에 사용한 주소를 프로젝트 페이지의 <strong>테스트넷 주소</strong>에 추가한 다음 <strong>다시 검사</strong>를 누르세요. 등록되지 않은 주소에서 보낸 트랜잭션은 인정되지 않습니다. 상금은 연결된 주소로 지급되지 않습니다. 상금을 지급할 때 수상자에게 받을 지갑을 묻습니다.
+
 ## 코드 {#code}
 
 모든 예제 앱은 하나의 공개 저장소의 `workshop-1`, `workshop-2`, `workshop-3`, `workshop-4` 폴더에 있습니다. [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). 각 튜토리얼이 어느 폴더를 열어야 하는지 알려 줍니다. 코드는 다음 명령으로 한 번만 받으면 됩니다.

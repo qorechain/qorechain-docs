@@ -81,6 +81,31 @@ Use the [QoreChain SDK](/sdk/overview), the public SDK for building applications
 
 The QCAIA community bot answers questions on Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) and Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). See [QCAIA Community Bot](/qcaia/overview).
 
+
+### Is there a second, independently operated EVM RPC for the testnet? {#testnet-second-evm-rpc}
+
+Not today. `https://evm-testnet.qore.host` is the only public EVM JSON-RPC for `qorechain-diana`, and the public testnet endpoints are run by the QoreChain team. Comparing them checks different interfaces, not independent operators.
+
+For a truly independent check, run your own testnet node with JSON-RPC enabled and query it directly. [Connecting to Testnet](/getting-started/connecting-to-testnet) has the binary, genesis, peers and state sync. Use state sync: the public sentry keeps only recent blocks.
+
+For quick cross-checks you can use the consensus RPC `https://rpc-testnet.qore.host` (blocks, transactions by hash), REST `https://api-testnet.qore.host` (accounts, balances, module state), the EVM WebSocket `wss://evm-ws-testnet.qore.host`, and the explorer at [explore.qore.network](https://explore.qore.network), switched to Testnet.
+
+### What happens if I open a new EVM window while one is still active? {#new-evm-window}
+
+The new window replaces the active one, so you do not need to close the old one first. An account has one window at a time.
+
+The new window starts with `usedTxs` and `usedValue` at zero. Its expiry, `maxTxs` and `maxValue` come only from the new message. Nothing carries over from the old window.
+
+The scope is replaced in full too. If the new message lists `allowed_targets`, the window allows only transactions to those addresses and refuses contract creation, so finish your deployments before you open such a window. If the new message has no list, the new window has none, even if the old one had one. After you broadcast, check the result with the EVM window query or in the `pqc_evm_window_opened` event. See [EVM window reference](/developer-guide/evm-window-reference).
+
+### How do I get my CosmWasm contract stored and allowed for cross-VM calls on the testnet? {#testnet-cosmwasm-allowlist}
+
+On the testnet, uploading CosmWasm code goes through governance. Submit a proposal that opens code upload, stores your code and closes upload again, in the same form as earlier proposals that passed (for example 27 and 50). Publish the source, a reproducible build and the sha256 of the wasm file so others can check it. A regular proposal needs a 10 QOR deposit and has a 4 hour vote. An expedited one needs 50 QOR, has a 1 hour vote and needs a higher share of yes votes.
+
+When the code is stored and your contract is instantiated, a second proposal adds it to the cross-VM allowlist (`bridge_allowed_targets`, with a pin in `bridge_target_pins`), as proposal 40 did. A contract with an admin other than governance must be pinned. That proposal replaces all the parameters of the module, so copy the current values from `https://api-testnet.qore.host/qorechain/crossvm/v1/params` and add your entry. The contract must already exist when the proposal executes.
+
+Post the proposal number in the fest builders channel when you submit it, so the testnet validators can review it and vote before voting ends. The full steps, with the exact files and commands, are in [Governance proposals for contracts](/developer-guide/governance-proposals-contracts).
+
 ## Related
 
 * [Networks](/appendix/networks) — chain IDs, ports, and endpoints reference.

@@ -29,6 +29,8 @@ La versione breve delle aggiunte della v3.2.8 è in [Opzioni di finestra aggiunt
 | Chiudi subito | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | nessuna (una transazione) |
 | Leggi | nessuno | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+Aprire una nuova finestra mentre un'altra è attiva la sostituisce: `usedTxs` e `usedValue` ripartono da zero, e la scadenza, i limiti e l'ambito derivano solo dal nuovo messaggio.
+
 Aprire e chiudere sono transazioni della corsia Native e richiedono la firma ibrida dell'account (classica più ML-DSA-87), e l'account deve già avere una chiave post-quantistica registrata per aprire una finestra. Chiudere una finestra ritira anche un consenso EIP-7702 in sospeso. Aprire **fa avanzare il nonce dell'account** (la sequenza Native è il nonce EVM), quindi apri prima la finestra e leggi il nonce EVM dopo.
 
 ### CLI {#cli}

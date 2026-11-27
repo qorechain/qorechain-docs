@@ -29,6 +29,8 @@ Varianta scurtă a adăugirilor din v3.2.8 se află în [Opțiuni de fereastră 
 | Închidere imediată | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | niciuna (o tranzacție) |
 | Citire | niciunul | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+Deschiderea unei ferestre noi cât timp una este activă o înlocuiește pe aceasta: `usedTxs` și `usedValue` pornesc din nou de la zero, iar expirarea, limitele și domeniul vin doar din noul mesaj.
+
 Deschiderea și închiderea sunt tranzacții pe lane-ul Native și au nevoie de semnătura hibridă a contului (clasică plus ML-DSA-87), iar contul trebuie să dețină deja o cheie post-cuantică înregistrată pentru a deschide o fereastră. Închiderea unei ferestre retrage și un consimțământ EIP-7702 aflat în așteptare. Deschiderea **avansează nonce-ul contului** (secvența Native este nonce-ul EVM), așa că deschideți mai întâi fereastra și citiți nonce-ul EVM după aceea.
 
 ### CLI {#cli}

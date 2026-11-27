@@ -81,6 +81,31 @@ Usa el [QoreChain SDK](/sdk/overview), el SDK público para construir aplicacion
 
 El bot comunitario QCAIA responde preguntas en Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) y Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Consulta [Bot comunitario QCAIA](/qcaia/overview).
 
+
+### ¿Existe un segundo EVM RPC de la testnet, operado de forma independiente? {#testnet-second-evm-rpc}
+
+Hoy no. `https://evm-testnet.qore.host` es el único JSON-RPC de EVM público para `qorechain-diana`, y los endpoints públicos de la testnet los opera el equipo de QoreChain. Compararlos comprueba interfaces distintas, no operadores independientes.
+
+Para una comprobación realmente independiente, ejecuta tu propio nodo de testnet con JSON-RPC habilitado y consúltalo directamente. [Conexión a la red de pruebas](/getting-started/connecting-to-testnet) tiene el binario, el génesis, los pares y el state sync. Usa state sync: el sentry público solo conserva los bloques recientes.
+
+Para verificaciones cruzadas rápidas puedes usar el RPC de consenso `https://rpc-testnet.qore.host` (bloques, transacciones por hash), REST `https://api-testnet.qore.host` (cuentas, saldos, estado de los módulos), el WebSocket de EVM `wss://evm-ws-testnet.qore.host` y el explorador en [explore.qore.network](https://explore.qore.network), cambiado a Testnet.
+
+### ¿Qué ocurre si abro una nueva ventana EVM mientras otra sigue activa? {#new-evm-window}
+
+La nueva ventana reemplaza a la activa, así que no necesitas cerrar antes la anterior. Una cuenta tiene una sola ventana a la vez.
+
+La nueva ventana empieza con `usedTxs` y `usedValue` en cero. Su vencimiento, `maxTxs` y `maxValue` salen solo del nuevo mensaje. Nada se traspasa de la ventana anterior.
+
+El alcance también se reemplaza por completo. Si el nuevo mensaje incluye `allowed_targets`, la ventana solo permite transacciones a esas direcciones y rechaza la creación de contratos, así que termina tus despliegues antes de abrir una ventana así. Si el nuevo mensaje no tiene lista, la nueva ventana no tiene ninguna, aunque la anterior la tuviera. Después de difundir la transacción, comprueba el resultado con la consulta de la ventana EVM o en el evento `pqc_evm_window_opened`. Consulta [Referencia de la ventana EVM](/developer-guide/evm-window-reference).
+
+### ¿Cómo consigo que mi contrato CosmWasm se guarde y se permita para llamadas entre VM en la testnet? {#testnet-cosmwasm-allowlist}
+
+En la testnet, la subida de código CosmWasm pasa por gobernanza. Envía una propuesta que abra la subida de código, guarde tu código y vuelva a cerrar la subida, con la misma forma que propuestas anteriores que se aprobaron (por ejemplo la 27 y la 50). Publica el código fuente, una compilación reproducible y el sha256 del archivo wasm para que otros puedan comprobarlo. Una propuesta normal necesita un depósito de 10 QOR y tiene una votación de 4 horas. Una urgente necesita 50 QOR, tiene una votación de 1 hora y requiere una proporción mayor de votos a favor.
+
+Cuando el código esté guardado y tu contrato instanciado, una segunda propuesta lo añade a la lista de permitidos entre VM (`bridge_allowed_targets`, con un pin en `bridge_target_pins`), como hizo la propuesta 40. Un contrato con un administrador distinto de la gobernanza debe estar fijado con un pin. Esa propuesta reemplaza todos los parámetros del módulo, así que copia los valores actuales de `https://api-testnet.qore.host/qorechain/crossvm/v1/params` y añade tu entrada. El contrato ya debe existir cuando se ejecute la propuesta.
+
+Publica el número de la propuesta en el canal de builders del festival cuando la envíes, para que los validadores de la testnet puedan revisarla y votar antes de que termine la votación. Los pasos completos, con los archivos y comandos exactos, están en [Propuestas de gobernanza para contratos](/developer-guide/governance-proposals-contracts).
+
 ## Relacionado
 
 * [Redes](/appendix/networks) — referencia de chain ID, puertos y endpoints.

@@ -29,6 +29,8 @@ Die Kurzfassung der Ergänzungen von v3.2.8 steht unter [In v3.2.8 hinzugekommen
 | Sofort schließen | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | keine (eine Transaktion) |
 | Lesen | keine | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+Wird ein neues Fenster geöffnet, während eines aktiv ist, ersetzt es dieses: `usedTxs` und `usedValue` beginnen wieder bei null, und Ablauf, Limits und Geltungsbereich stammen ausschließlich aus der neuen Nachricht.
+
 Öffnen und Schließen sind Transaktionen der Native-Lane und benötigen die hybride Signatur des Kontos (klassisch plus ML-DSA-87); das Konto muss bereits einen registrierten Post-Quanten-Schlüssel besitzen, um ein Fenster zu öffnen. Das Schließen eines Fensters zieht auch eine ausstehende EIP-7702-Zustimmung zurück. Das Öffnen **erhöht die Nonce des Kontos** (die Native-Sequenz ist die EVM-Nonce); öffnen Sie also zuerst das Fenster und lesen Sie danach die EVM-Nonce.
 
 ### CLI {#cli}

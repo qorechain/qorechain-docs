@@ -104,6 +104,28 @@ Read [Before you start: tools and a testnet wallet](/build-before-qday/prerequis
 3. Try one of the example apps from the table above.
 4. If you have never deployed on QoreChain, [Deploy in 5 Minutes](/getting-started/deploy-in-5-minutes) explains the idea in depth. The kits behind the apps are on the [Kits](/build-before-qday/workshop-1/kits) page.
 
+## Questions builders ask {#builder-questions}
+
+The full rules are on the Rules page of [build.qorechain.io](https://build.qorechain.io), and more questions are answered in the FAQ there.
+
+### Does my repository have to be public? {#faq-public-repo}
+
+Yes. A private repository, including one shared with a single account, does not pass the submission checks. By the deadline, 2 December 2026 at 23:59 UTC, the repository must be public on GitHub under the MIT or Apache-2.0 licence, with the licence file in it. You can keep it private while you build and make it public before you submit. Never commit keys, seed phrases or `.env` files.
+
+### My project is a wallet of its own. Does it still need to connect QoreX for the Quantum Pass? {#faq-wallet-project}
+
+Yes. The Quantum Pass asks you to connect QoreX, so add QoreX as a connection option next to your own wallet, and let users pick either. Send the pass's hybrid-signed transaction through QoreX.
+
+QoreX offers `window.qorex.native` for QoreChain Native transactions and `window.qorex.evm`, an EIP-1193 provider that is also announced through EIP-6963 with the `rdns` `network.qore.qorex`. QoreX never sets `window.keplr`, so detect `window.qorex`. On the testnet use the chain id `qorechain-diana` (EVM chain ID 9800). See [dApp integration](/qorex/dapp-integration).
+
+### I built my app before running create-qorechain-dapp. How do I show that I used it? {#faq-starter}
+
+Add the generated app to your repository. Put the output of `create-qorechain-dapp` in its own folder (for example `apps/web`), keep its structure, and have it connect QoreX and send the hybrid-signed transaction. Name the folder and the command you ran in your README. Jurors check the use of `create-qorechain-dapp` by hand, so a generated app they can see is the safest proof. Moving SDK calls into an existing app is fine, but on its own it does not show that you used the starter.
+
+### I deployed my contract from a different address than the QoreX address I registered with. Is that a problem? {#faq-other-address}
+
+No. Your linked QoreX address proves your registration. You do not need to change it, and a testnet account created on the command line is fine for deploying. Ship Weeks and the project checks look at your linked address and every `qor1` address listed on your project page. Add the address you deployed from under **Testnet addresses** on your project page, then press **Check again**. A transaction from an address that is not listed does not count. Prizes are not paid to the linked address: winners are asked for a payout wallet when prizes are paid.
+
 ## The code {#code}
 
 All example apps are in one public repository, folders `workshop-1`, `workshop-2`, `workshop-3` and `workshop-4`: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Each tutorial tells you which folder to open. Get the code once with:

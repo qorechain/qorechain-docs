@@ -29,6 +29,8 @@ The short version of the v3.2.8 additions is in [Window options added in v3.2.8]
 | Close at once | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | none (a transaction) |
 | Read | none | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+Opening a new window while one is active replaces it: `usedTxs` and `usedValue` start again at zero, and the expiry, the limits and the scope come only from the new message.
+
 Opening and closing are Native-lane transactions and need the account's hybrid (classical plus ML-DSA-87) signature, and the account must already hold a registered post-quantum key to open a window. Closing a window also withdraws a pending EIP-7702 consent. Opening **advances the account's nonce** (the Native sequence is the EVM nonce), so open the window first and read the EVM nonce afterwards.
 
 ### CLI {#cli}

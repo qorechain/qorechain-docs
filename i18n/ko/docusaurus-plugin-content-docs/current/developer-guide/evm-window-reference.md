@@ -29,6 +29,8 @@ v3.2.8에서 추가된 사항의 요약은 [v3.2.8에서 추가된 윈도우 옵
 | 즉시 닫기 | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | 없음(트랜잭션) |
 | 읽기 | 없음 | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+활성 윈도우가 있을 때 새 윈도우를 열면 기존 윈도우가 대체됩니다. `usedTxs`와 `usedValue`는 다시 0에서 시작하며, 만료 시점, 한도, 범위는 새 메시지에서만 정해집니다.
+
 열기와 닫기는 Native 레인 트랜잭션이며 계정의 하이브리드(클래식 + ML-DSA-87) 서명이 필요하고, 윈도우를 열려면 계정에 등록된 포스트 퀀텀 키가 이미 있어야 합니다. 윈도우를 닫으면 대기 중인 EIP-7702 동의도 철회됩니다. 윈도우를 열면 **계정의 nonce가 증가**하므로(Native 시퀀스가 곧 EVM nonce), 먼저 윈도우를 열고 그 후에 EVM nonce를 읽으세요.
 
 ### CLI {#cli}

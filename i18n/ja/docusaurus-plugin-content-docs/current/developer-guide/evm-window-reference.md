@@ -29,6 +29,8 @@ v3.2.8での追加事項の概要は[v3.2.8で追加されたウィンドウオ�
 | ただちに閉じる | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | なし(トランザクション) |
 | 読み取る | なし | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+有効なウィンドウがある状態で新しいウィンドウを開くと、古いウィンドウは置き換えられます。`usedTxs` と `usedValue` は再びゼロから始まり、有効期限、上限、スコープは新しいメッセージだけから決まります。
+
 ウィンドウの開始と終了は、Nativeレーンのトランザクションであり、アカウントのハイブリッド署名(クラシックとML-DSA-87)が必要です。また、ウィンドウを開くには、アカウントがすでに登録済みのポスト量子鍵を持っている必要があります。ウィンドウを閉じると、保留中のEIP-7702の同意も取り下げられます。ウィンドウを開くと、**アカウントのnonceが進みます**(NativeのシーケンスがEVMのnonceです)。そのため、先にウィンドウを開き、その後でEVMのnonceを読み取ってください。
 
 ### CLI {#cli}

@@ -28,6 +28,8 @@ Dacă aveți nevoie doar să **interogați rețeaua de test sau să difuzați tr
 
 QOR pentru rețeaua de test este disponibil din [Faucetul din Dashboard](/dashboard/faucet), care poate trimite și [tokenurile de test Fest](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; fără valoare), valabile doar pe rețeaua de test.
 
+Există un singur EVM JSON-RPC public pentru rețeaua de test. Pentru a verifica independent rezultatele, rulați propriul nod: vezi [întrebările frecvente](/appendix/faq#testnet-second-evm-rpc).
+
 Gazdele publice sunt partajate și au limite (rata cererilor, dimensiuni SVM RPC, filtre EVM); `eth_call` și estimarea gazului merg prin gazda EVM JSON-RPC. Vezi [Limite pe punctele finale publice](/appendix/networks#public-limits).
 
 ---

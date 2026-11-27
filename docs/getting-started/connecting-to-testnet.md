@@ -28,6 +28,8 @@ If you only need to **query the testnet or broadcast transactions**, use the pub
 
 Testnet QOR is available from the [Dashboard Faucet](/dashboard/faucet), which can also send the testnet-only [Fest test tokens](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; no value).
 
+There is one public EVM JSON-RPC for the testnet. To check results independently, run your own node: see [the FAQ](/appendix/faq#testnet-second-evm-rpc).
+
 The public hosts are shared and carry limits (request rate, SVM RPC sizes, EVM filters); `eth_call` and gas estimation go through the EVM JSON-RPC host. See [Limits on the public endpoints](/appendix/networks#public-limits).
 
 ---

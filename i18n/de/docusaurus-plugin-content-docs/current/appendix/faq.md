@@ -81,6 +81,30 @@ Verwenden Sie das [QoreChain SDK](/sdk/overview), das öffentliche SDK zum Erste
 
 Der QCAIA-Community-Bot beantwortet Fragen auf Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) und Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Siehe [QCAIA-Community-Bot](/qcaia/overview).
 
+### Gibt es einen zweiten, unabhängig betriebenen EVM-RPC für das Testnet? {#testnet-second-evm-rpc}
+
+Derzeit nicht. `https://evm-testnet.qore.host` ist der einzige öffentliche EVM JSON-RPC für `qorechain-diana`, und die öffentlichen Testnet-Endpunkte werden vom QoreChain-Team betrieben. Ein Vergleich zwischen ihnen prüft verschiedene Schnittstellen, nicht unabhängige Betreiber.
+
+Für eine wirklich unabhängige Prüfung betreiben Sie Ihren eigenen Testnet-Node mit aktiviertem JSON-RPC und fragen Sie ihn direkt ab. [Verbindung zum Testnet](/getting-started/connecting-to-testnet) enthält das Binary, die Genesis, die Peers und den State Sync. Verwenden Sie State Sync: Der öffentliche Sentry behält nur aktuelle Blöcke.
+
+Für schnelle Gegenprüfungen können Sie den Konsens-RPC `https://rpc-testnet.qore.host` (Blöcke, Transaktionen nach Hash), REST `https://api-testnet.qore.host` (Konten, Guthaben, Modulzustand), den EVM WebSocket `wss://evm-ws-testnet.qore.host` und den Explorer unter [explore.qore.network](https://explore.qore.network), auf Testnet umgeschaltet, verwenden.
+
+### Was passiert, wenn ich ein neues EVM-Fenster öffne, während noch eines aktiv ist? {#new-evm-window}
+
+Das neue Fenster ersetzt das aktive, Sie müssen das alte also nicht vorher schließen. Ein Konto hat immer nur ein Fenster gleichzeitig.
+
+Das neue Fenster beginnt mit `usedTxs` und `usedValue` bei null. Sein Ablauf, `maxTxs` und `maxValue` stammen ausschließlich aus der neuen Nachricht. Nichts wird aus dem alten Fenster übernommen.
+
+Auch der Geltungsbereich wird vollständig ersetzt. Wenn die neue Nachricht `allowed_targets` auflistet, erlaubt das Fenster nur Transaktionen an diese Adressen und lehnt die Vertragserstellung ab. Schließen Sie Ihre Deployments daher ab, bevor Sie ein solches Fenster öffnen. Hat die neue Nachricht keine Liste, hat auch das neue Fenster keine, selbst wenn das alte eine hatte. Prüfen Sie nach dem Broadcast das Ergebnis mit der EVM-Fenster-Abfrage oder im Ereignis `pqc_evm_window_opened`. Siehe [Referenz zum EVM-Autorisierungsfenster](/developer-guide/evm-window-reference).
+
+### Wie lasse ich meinen CosmWasm-Vertrag im Testnet speichern und für Cross-VM-Aufrufe zulassen? {#testnet-cosmwasm-allowlist}
+
+Im Testnet läuft das Hochladen von CosmWasm-Code über die Governance. Reichen Sie einen Vorschlag ein, der den Code-Upload öffnet, Ihren Code speichert und den Upload wieder schließt, in derselben Form wie frühere angenommene Vorschläge (zum Beispiel 27 und 50). Veröffentlichen Sie den Quellcode, einen reproduzierbaren Build und den sha256 der wasm-Datei, damit andere ihn prüfen können. Ein regulärer Vorschlag braucht eine Einzahlung von 10 QOR und hat eine Abstimmung von 4 Stunden. Ein beschleunigter braucht 50 QOR, hat eine Abstimmung von 1 Stunde und benötigt einen höheren Anteil an Ja-Stimmen.
+
+Wenn der Code gespeichert und Ihr Vertrag instanziiert ist, fügt ihn ein zweiter Vorschlag der Cross-VM-Allowlist hinzu (`bridge_allowed_targets`, mit einem Pin in `bridge_target_pins`), wie es Vorschlag 40 getan hat. Ein Vertrag mit einem anderen Admin als der Governance muss gepinnt werden. Dieser Vorschlag ersetzt alle Parameter des Moduls. Kopieren Sie daher die aktuellen Werte aus `https://api-testnet.qore.host/qorechain/crossvm/v1/params` und fügen Sie Ihren Eintrag hinzu. Der Vertrag muss bereits existieren, wenn der Vorschlag ausgeführt wird.
+
+Posten Sie die Vorschlagsnummer beim Einreichen im Builder-Kanal des Fests, damit die Testnet-Validatoren ihn prüfen und vor Ende der Abstimmung abstimmen können. Die vollständigen Schritte mit den genauen Dateien und Befehlen stehen in [Governance-Vorschläge für Verträge](/developer-guide/governance-proposals-contracts).
+
 ## Verwandt
 
 * [Netzwerke](/appendix/networks) — Referenz für Chain-IDs, Ports und Endpunkte.

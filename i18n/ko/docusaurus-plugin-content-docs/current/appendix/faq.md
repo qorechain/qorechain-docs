@@ -81,6 +81,30 @@ QoreChain의 EVM, SVM, QoreChain Native 실행 환경 전반에 걸쳐 애플리
 
 QCAIA 커뮤니티 봇이 Discord([discord.gg/qorechain](https://discord.gg/qorechain))와 Telegram([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity))에서 질문에 답합니다. [QCAIA 커뮤니티 봇](/qcaia/overview)을 참조하세요.
 
+### 테스트넷에 독립적으로 운영되는 두 번째 EVM RPC가 있나요? {#testnet-second-evm-rpc}
+
+현재는 없습니다. `qorechain-diana`의 퍼블릭 EVM JSON-RPC는 `https://evm-testnet.qore.host` 하나뿐이며, 테스트넷의 퍼블릭 엔드포인트는 QoreChain 팀이 운영합니다. 이들을 서로 비교하면 서로 다른 인터페이스를 확인하는 것이지, 독립적인 운영자를 확인하는 것이 아닙니다.
+
+진정으로 독립적인 확인을 하려면 JSON-RPC를 활성화한 자체 테스트넷 노드를 실행하고 직접 조회하세요. 바이너리, 제네시스, 피어, 스테이트 싱크는 [테스트넷 연결하기](/getting-started/connecting-to-testnet)에 있습니다. 스테이트 싱크를 사용하세요. 퍼블릭 센트리는 최근 블록만 보관합니다.
+
+빠른 교차 확인에는 컨센서스 RPC `https://rpc-testnet.qore.host`(블록, 해시로 조회하는 트랜잭션), REST `https://api-testnet.qore.host`(계정, 잔액, 모듈 상태), EVM WebSocket `wss://evm-ws-testnet.qore.host`, 그리고 Testnet으로 전환한 [explore.qore.network](https://explore.qore.network) 익스플로러를 사용할 수 있습니다.
+
+### EVM 윈도우가 아직 활성 상태일 때 새 윈도우를 열면 어떻게 되나요? {#new-evm-window}
+
+새 윈도우가 활성 윈도우를 대체하므로, 이전 윈도우를 먼저 닫을 필요가 없습니다. 계정은 한 번에 하나의 윈도우만 가집니다.
+
+새 윈도우는 `usedTxs`와 `usedValue`가 0인 상태로 시작합니다. 만료 시점, `maxTxs`, `maxValue`는 새 메시지에서만 정해집니다. 이전 윈도우에서 이어지는 것은 없습니다.
+
+범위도 전부 대체됩니다. 새 메시지에 `allowed_targets`가 있으면 윈도우는 해당 주소로 보내는 트랜잭션만 허용하고 컨트랙트 생성은 거부하므로, 이런 윈도우를 열기 전에 배포를 마치세요. 새 메시지에 목록이 없으면, 이전 윈도우에 목록이 있었더라도 새 윈도우에는 목록이 없습니다. 브로드캐스트한 후에는 EVM 윈도우 쿼리나 `pqc_evm_window_opened` 이벤트에서 결과를 확인하세요. [EVM 인가 윈도우 레퍼런스](/developer-guide/evm-window-reference)를 참조하세요.
+
+### 테스트넷에서 CosmWasm 컨트랙트 코드를 저장하고 크로스 VM 호출을 허용받으려면 어떻게 하나요? {#testnet-cosmwasm-allowlist}
+
+테스트넷에서 CosmWasm 코드 업로드는 거버넌스를 거칩니다. 코드 업로드를 열고, 코드를 저장한 다음, 업로드를 다시 닫는 제안을 이전에 통과된 제안(예: 27번과 50번)과 같은 형식으로 제출하세요. 다른 사람이 확인할 수 있도록 소스, 재현 가능한 빌드, wasm 파일의 sha256을 공개하세요. 일반 제안에는 10 QOR의 보증금이 필요하며 투표 기간은 4시간입니다. 신속 제안에는 50 QOR가 필요하고 투표 기간은 1시간이며, 더 높은 찬성표 비율이 필요합니다.
+
+코드가 저장되고 컨트랙트가 인스턴스화되면, 두 번째 제안이 40번 제안처럼 컨트랙트를 크로스 VM 허용 목록에 추가합니다(`bridge_allowed_targets`, 그리고 `bridge_target_pins`의 고정). 거버넌스가 아닌 admin이 있는 컨트랙트는 반드시 고정해야 합니다. 이 제안은 모듈의 모든 파라미터를 대체하므로, `https://api-testnet.qore.host/qorechain/crossvm/v1/params`에서 현재 값을 복사한 다음 자신의 항목을 추가하세요. 제안이 실행되는 시점에는 컨트랙트가 이미 존재해야 합니다.
+
+테스트넷 검증자가 검토하고 투표가 끝나기 전에 투표할 수 있도록, 제안을 제출할 때 페스트 빌더 채널에 제안 번호를 올려 주세요. 정확한 파일과 명령을 포함한 전체 절차는 [컨트랙트를 위한 거버넌스 제안](/developer-guide/governance-proposals-contracts)에 있습니다.
+
 ## 관련 문서
 
 * [네트워크](/appendix/networks) — 체인 ID, 포트, 엔드포인트 참조.

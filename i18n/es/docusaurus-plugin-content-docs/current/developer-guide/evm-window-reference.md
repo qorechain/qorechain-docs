@@ -29,6 +29,8 @@ El resumen corto de las novedades de v3.2.8 está en [Opciones de ventana añadi
 | Cerrar de inmediato | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | ninguna (es una transacción) |
 | Leer | ninguno | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+Abrir una nueva ventana mientras otra está activa la reemplaza: `usedTxs` y `usedValue` vuelven a empezar en cero, y el vencimiento, los límites y el alcance salen solo del nuevo mensaje.
+
 Abrir y cerrar son transacciones del carril Native y necesitan la firma híbrida de la cuenta (clásica más ML-DSA-87), y la cuenta debe tener ya registrada una clave post-cuántica para abrir una ventana. Cerrar una ventana también retira un consentimiento EIP-7702 pendiente. Abrir **avanza el nonce de la cuenta** (la secuencia Native es el nonce EVM), así que abre primero la ventana y lee el nonce EVM después.
 
 ### CLI {#cli}

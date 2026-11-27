@@ -28,6 +28,8 @@ sidebar_position: 4
 
 テストネット用の QOR は [ダッシュボードのフォーセット](/dashboard/faucet) から入手できます。このフォーセットでは、テストネット専用の[Fest テストトークン](/dashboard/faucet#fest-tokens)(fUSD、fETH、fBTC。価値なし)も送ることができます。
 
+テストネットのパブリック EVM JSON-RPC は1つです。結果を独立して確認するには、自分のノードを実行してください。[よくある質問](/appendix/faq#testnet-second-evm-rpc) を参照してください。
+
 パブリックホストは共有されており、制限があります（リクエストレート、SVM RPC のサイズ、EVM フィルター）。`eth_call` とガス見積もりは EVM JSON-RPC ホスト経由で行います。[パブリックエンドポイントの制限](/appendix/networks#public-limits)を参照してください。
 
 ---

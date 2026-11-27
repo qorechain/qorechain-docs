@@ -28,6 +28,8 @@ Yalnızca **test ağını sorgulamanız veya işlem yayınlamanız** gerekiyorsa
 
 Test ağı QOR'u [Panel Musluğu](/dashboard/faucet) üzerinden edinilebilir; musluk ayrıca yalnızca test ağına özel [Fest test tokenlerini](/dashboard/faucet#fest-tokens) (fUSD, fETH, fBTC; değersiz) da gönderebilir.
 
+Test ağı için tek bir genel EVM JSON-RPC vardır. Sonuçları bağımsız olarak kontrol etmek için kendi düğümünüzü çalıştırın: bkz. [SSS](/appendix/faq#testnet-second-evm-rpc).
+
 Genel ana makineler paylaşımlıdır ve sınırları vardır (istek hızı, SVM RPC boyutları, EVM filtreleri); `eth_call` ve gas tahmini EVM JSON-RPC ana makinesi üzerinden yapılır. Bkz. [Genel uç noktalardaki sınırlar](/appendix/networks#public-limits).
 
 ---

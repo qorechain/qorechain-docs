@@ -29,6 +29,8 @@ v3.2.8 eklerinin kısa özeti [v3.2.8'de eklenen pencere seçenekleri](/develope
 | Hemen kapatma | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | yok (bir işlem) |
 | Okuma | yok | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+Bir pencere etkinken yeni bir pencere açmak onun yerine geçer: `usedTxs` ve `usedValue` yeniden sıfırdan başlar; sona erme zamanı, limitler ve kapsam yalnızca yeni mesajdan gelir.
+
 Açma ve kapatma Native hat işlemleridir ve hesabın hibrit (klasik artı ML-DSA-87) imzasını gerektirir; ayrıca hesabın pencere açabilmesi için kayıtlı bir kuantum sonrası anahtarı olmalıdır. Bir pencereyi kapatmak, bekleyen bir EIP-7702 onayını da geri çeker. Açmak **hesabın nonce değerini ilerletir** (Native sıra numarası EVM nonce değeridir); bu yüzden önce pencereyi açın, sonra EVM nonce değerini okuyun.
 
 ### CLI {#cli}

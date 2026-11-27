@@ -104,6 +104,28 @@ Her eğitim aynı yapıyı izler: **Başlamadan önce**, numaralı adımlar (her
 3. Yukarıdaki tablodan örnek uygulamalardan birini deneyin.
 4. QoreChain'e hiç dağıtım yapmadıysanız, [5 Dakikada Dağıtım](/getting-started/deploy-in-5-minutes) fikri ayrıntılı açıklar. Uygulamaların arkasındaki kitler [Kitler](/build-before-qday/workshop-1/kits) sayfasındadır.
 
+## Geliştiricilerin sorduğu sorular {#builder-questions}
+
+Kuralların tamamı [build.qorechain.io](https://build.qorechain.io) sitesinin Rules sayfasındadır; daha fazla soru da oradaki SSS'de yanıtlanır.
+
+### Repomun herkese açık olması gerekiyor mu? {#faq-public-repo}
+
+Evet. Tek bir hesapla paylaşılmış olanlar dahil, özel bir repo gönderim kontrollerinden geçmez. Son tarih olan 2 Aralık 2026 saat 23:59 UTC'ye kadar repo, MIT veya Apache-2.0 lisansı altında ve lisans dosyası içinde olacak şekilde GitHub'da herkese açık olmalıdır. Geliştirirken özel tutabilir ve göndermeden önce herkese açık yapabilirsiniz. Anahtarları, seed phrase'leri veya `.env` dosyalarını asla commit etmeyin.
+
+### Projemin kendisi bir cüzdan. Quantum Pass için yine de QoreX'i bağlaması gerekiyor mu? {#faq-wallet-project}
+
+Evet. Quantum Pass sizden QoreX'i bağlamanızı ister; bu yüzden kendi cüzdanınızın yanına bir bağlantı seçeneği olarak QoreX'i ekleyin ve kullanıcıların istediğini seçmesine izin verin. Pass'in hibrit imzalı işlemini QoreX üzerinden gönderin.
+
+QoreX, QoreChain Native işlemleri için `window.qorex.native` ve `window.qorex.evm` sunar; ikincisi, `rdns` değeri `network.qore.qorex` olacak şekilde EIP-6963 üzerinden de duyurulan bir EIP-1193 sağlayıcısıdır. QoreX `window.keplr` nesnesini asla tanımlamaz; bu yüzden `window.qorex` nesnesini algılayın. Test ağında `qorechain-diana` zincir kimliğini kullanın (EVM zincir kimliği 9800). Bkz. [Bir dApp'i QoreX ile Entegre Edin](/qorex/dapp-integration).
+
+### Uygulamamı create-qorechain-dapp'i çalıştırmadan önce geliştirdim. Onu kullandığımı nasıl gösteririm? {#faq-starter}
+
+Oluşturulan uygulamayı reponuza ekleyin. `create-qorechain-dapp` çıktısını kendi klasörüne koyun (örneğin `apps/web`), yapısını koruyun ve uygulamanın QoreX'i bağlayıp hibrit imzalı işlemi göndermesini sağlayın. README'nizde klasörün adını ve çalıştırdığınız komutu belirtin. Jüri üyeleri `create-qorechain-dapp` kullanımını elle kontrol eder; bu yüzden görebilecekleri, oluşturulmuş bir uygulama en güvenli kanıttır. SDK çağrılarını mevcut bir uygulamaya taşımanız sorun değildir, ancak tek başına starter'ı kullandığınızı göstermez.
+
+### Sözleşmemi, kaydolduğum QoreX adresinden farklı bir adresten dağıttım. Bu sorun olur mu? {#faq-other-address}
+
+Hayır. Bağlı QoreX adresiniz kaydınızı kanıtlar. Onu değiştirmeniz gerekmez ve komut satırında oluşturulan bir test ağı hesabı dağıtım için uygundur. Ship Weeks ve proje kontrolleri, bağlı adresinize ve proje sayfanızda listelenen her `qor1` adresine bakar. Dağıtım yaptığınız adresi proje sayfanızdaki **Testnet adresleri** alanına ekleyin, ardından **Yeniden kontrol et** düğmesine basın. Listede olmayan bir adresten yapılan işlem sayılmaz. Ödüller bağlı adrese ödenmez: ödüller ödenirken kazananlardan bir ödeme cüzdanı istenir.
+
 ## Kod {#code}
 
 Tüm örnek uygulamalar tek bir herkese açık depoda, `workshop-1`, `workshop-2`, `workshop-3` ve `workshop-4` klasörlerindedir: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Her eğitim hangi klasörü açacağınızı söyler. Kodu bir kez şu komutla alın:

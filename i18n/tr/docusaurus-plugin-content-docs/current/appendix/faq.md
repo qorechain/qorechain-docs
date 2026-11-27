@@ -81,6 +81,31 @@ QoreChain'in EVM, SVM ve QoreChain Native yürütme ortamlarında uygulama oluş
 
 QCAIA topluluk botu, Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) ve Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)) üzerinde soruları yanıtlar. Bkz. [QCAIA Topluluk Botu](/qcaia/overview).
 
+
+### Test ağı için bağımsız olarak işletilen ikinci bir EVM RPC var mı? {#testnet-second-evm-rpc}
+
+Şu anda yok. `https://evm-testnet.qore.host`, `qorechain-diana` için tek genel EVM JSON-RPC'dir ve test ağının genel uç noktaları QoreChain ekibi tarafından işletilir. Bunları karşılaştırmak bağımsız işletmecileri değil, farklı arayüzleri kontrol eder.
+
+Gerçekten bağımsız bir kontrol için JSON-RPC etkinleştirilmiş kendi test ağı düğümünüzü çalıştırın ve doğrudan onu sorgulayın. İkili dosya, genesis, eşler ve state sync [Test Ağına Bağlanma](/getting-started/connecting-to-testnet) sayfasındadır. State sync kullanın: genel sentry yalnızca son blokları tutar.
+
+Hızlı çapraz kontroller için konsensüs RPC `https://rpc-testnet.qore.host` (bloklar, hash ile işlemler), REST `https://api-testnet.qore.host` (hesaplar, bakiyeler, modül durumu), EVM WebSocket `wss://evm-ws-testnet.qore.host` ve Testnet'e geçirilmiş [explore.qore.network](https://explore.qore.network) adresindeki gezgini kullanabilirsiniz.
+
+### Bir EVM penceresi hâlâ etkinken yenisini açarsam ne olur? {#new-evm-window}
+
+Yeni pencere etkin olanın yerine geçer; bu yüzden önce eskisini kapatmanız gerekmez. Bir hesabın aynı anda tek bir penceresi olur.
+
+Yeni pencere `usedTxs` ve `usedValue` sıfır olarak başlar. Sona erme zamanı, `maxTxs` ve `maxValue` yalnızca yeni mesajdan gelir. Eski pencereden hiçbir şey devredilmez.
+
+Kapsam da tümüyle değiştirilir. Yeni mesaj `allowed_targets` listeliyorsa pencere yalnızca bu adreslere yapılan işlemlere izin verir ve sözleşme oluşturmayı reddeder; bu yüzden böyle bir pencere açmadan önce dağıtımlarınızı bitirin. Yeni mesajda liste yoksa, eskisinde olsa bile yeni pencerede hiç liste olmaz. İşlemi yayınladıktan sonra sonucu EVM penceresi sorgusuyla veya `pqc_evm_window_opened` olayında kontrol edin. Bkz. [EVM Pencere Başvurusu](/developer-guide/evm-window-reference).
+
+### CosmWasm sözleşmemin test ağında saklanmasını ve VM'ler arası çağrılar için izin almasını nasıl sağlarım? {#testnet-cosmwasm-allowlist}
+
+Test ağında CosmWasm kodu yükleme yönetişimden geçer. Kod yüklemeyi açan, kodunuzu saklayan ve yüklemeyi yeniden kapatan bir öneri gönderin; öneri, daha önce kabul edilen önerilerle (örneğin 27 ve 50) aynı biçimde olsun. Başkalarının kontrol edebilmesi için kaynak kodu, yeniden üretilebilir bir derlemeyi ve wasm dosyasının sha256 değerini yayımlayın. Normal bir öneri 10 QOR depozito gerektirir ve oylaması 4 saat sürer. Hızlandırılmış bir öneri 50 QOR gerektirir, oylaması 1 saat sürer ve daha yüksek oranda evet oyu ister.
+
+Kod saklandıktan ve sözleşmeniz için bir örnek oluşturulduktan sonra, öneri 40'ta olduğu gibi ikinci bir öneri onu VM'ler arası izin listesine ekler (`bridge_allowed_targets`, `bridge_target_pins` içinde bir sabitlemeyle). Yöneticisi yönetişim dışında biri olan bir sözleşme sabitlenmek zorundadır. Bu öneri modülün tüm parametrelerinin yerine geçer; bu yüzden güncel değerleri `https://api-testnet.qore.host/qorechain/crossvm/v1/params` adresinden kopyalayın ve kendi girdinizi ekleyin. Öneri yürütüldüğünde sözleşme zaten mevcut olmalıdır.
+
+Test ağı doğrulayıcılarının öneriyi oylama bitmeden inceleyip oy verebilmesi için, öneriyi gönderdiğinizde numarasını festivalin builders kanalında paylaşın. Tam dosya ve komutlarla birlikte tüm adımlar [Sözleşmeler için Yönetişim Önerileri](/developer-guide/governance-proposals-contracts) sayfasındadır.
+
 ## İlgili
 
 * [Ağlar](/appendix/networks) — zincir kimlikleri, portlar ve uç noktalar referansı.

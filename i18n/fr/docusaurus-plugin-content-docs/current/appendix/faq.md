@@ -81,6 +81,30 @@ Utilisez le [QoreChain SDK](/sdk/overview), le SDK public pour construire des ap
 
 Le bot communautaire QCAIA répond aux questions sur Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) et Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Voir [Bot communautaire QCAIA](/qcaia/overview).
 
+### Existe-t-il un second RPC EVM pour le testnet, exploité de façon indépendante ? {#testnet-second-evm-rpc}
+
+Pas aujourd'hui. `https://evm-testnet.qore.host` est le seul JSON-RPC EVM public pour `qorechain-diana`, et les points d'accès publics du testnet sont exploités par l'équipe QoreChain. Les comparer entre eux vérifie des interfaces différentes, pas des opérateurs indépendants.
+
+Pour une vérification réellement indépendante, exécutez votre propre nœud testnet avec le JSON-RPC activé et interrogez-le directement. [Connexion au testnet](/getting-started/connecting-to-testnet) fournit le binaire, le genesis, les pairs et le state-sync. Utilisez le state-sync : le sentry public ne conserve que les blocs récents.
+
+Pour des recoupements rapides, vous pouvez utiliser le RPC de consensus `https://rpc-testnet.qore.host` (blocs, transactions par hash), le REST `https://api-testnet.qore.host` (comptes, soldes, état des modules), le WebSocket EVM `wss://evm-ws-testnet.qore.host` et l'explorateur à l'adresse [explore.qore.network](https://explore.qore.network), basculé sur Testnet.
+
+### Que se passe-t-il si j'ouvre une nouvelle fenêtre EVM alors qu'une autre est encore active ? {#new-evm-window}
+
+La nouvelle fenêtre remplace la fenêtre active, vous n'avez donc pas besoin de fermer l'ancienne au préalable. Un compte n'a qu'une fenêtre à la fois.
+
+La nouvelle fenêtre démarre avec `usedTxs` et `usedValue` à zéro. Son expiration, `maxTxs` et `maxValue` proviennent uniquement du nouveau message. Rien n'est repris de l'ancienne fenêtre.
+
+La portée est elle aussi remplacée en entier. Si le nouveau message liste des `allowed_targets`, la fenêtre n'autorise que les transactions vers ces adresses et refuse la création de contrats : terminez donc vos déploiements avant d'ouvrir une telle fenêtre. Si le nouveau message n'a pas de liste, la nouvelle fenêtre n'en a pas, même si l'ancienne en avait une. Après la diffusion, vérifiez le résultat avec la requête de la fenêtre EVM ou dans l'événement `pqc_evm_window_opened`. Voir [Référence de la fenêtre d'autorisation EVM](/developer-guide/evm-window-reference).
+
+### Comment faire stocker mon contrat CosmWasm et l'autoriser pour les appels inter-VM sur le testnet ? {#testnet-cosmwasm-allowlist}
+
+Sur le testnet, l'envoi de code CosmWasm passe par la gouvernance. Soumettez une proposition qui ouvre l'envoi de code, stocke votre code et referme l'envoi, sous la même forme que des propositions antérieures adoptées (par exemple la 27 et la 50). Publiez le code source, un build reproductible et le sha256 du fichier wasm pour que d'autres puissent le vérifier. Une proposition ordinaire exige un dépôt de 10 QOR et comporte un vote de 4 heures. Une proposition accélérée exige 50 QOR, comporte un vote de 1 heure et demande une part plus élevée de votes favorables.
+
+Une fois le code stocké et votre contrat instancié, une seconde proposition l'ajoute à la liste d'autorisation inter-VM (`bridge_allowed_targets`, avec un épinglage dans `bridge_target_pins`), comme l'a fait la proposition 40. Un contrat dont l'admin n'est pas la gouvernance doit être épinglé. Cette proposition remplace tous les paramètres du module : copiez donc les valeurs actuelles depuis `https://api-testnet.qore.host/qorechain/crossvm/v1/params` et ajoutez votre entrée. Le contrat doit déjà exister au moment où la proposition s'exécute.
+
+Publiez le numéro de la proposition dans le canal des builders du fest lorsque vous la soumettez, afin que les validateurs du testnet puissent l'examiner et voter avant la fin du vote. Les étapes complètes, avec les fichiers et les commandes exacts, se trouvent dans [Propositions de gouvernance pour les contrats](/developer-guide/governance-proposals-contracts).
+
 ## Voir aussi
 
 * [Réseaux](/appendix/networks) — référence des chain IDs, ports et points de terminaison.

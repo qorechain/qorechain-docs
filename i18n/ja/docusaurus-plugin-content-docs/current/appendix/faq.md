@@ -81,6 +81,30 @@ QoreChain の EVM、SVM、QoreChain Native 実行環境全体でアプリケー�
 
 QCAIA コミュニティボットが Discord（[discord.gg/qorechain](https://discord.gg/qorechain)）および Telegram（[t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)）で質問に回答します。[QCAIA コミュニティボット](/qcaia/overview) を参照してください。
 
+### テストネット用の、独立して運営される2つ目の EVM RPC はありますか？ {#testnet-second-evm-rpc}
+
+現在はありません。`qorechain-diana` のパブリック EVM JSON-RPC は `https://evm-testnet.qore.host` のみで、テストネットのパブリックエンドポイントは QoreChain チームが運営しています。これらを比較して確認できるのは異なるインターフェースであり、独立した運営者ではありません。
+
+真に独立した確認をするには、JSON-RPC を有効にした自分のテストネットノードを実行し、直接クエリしてください。バイナリ、ジェネシス、ピア、ステートシンクについては [テストネットへの接続](/getting-started/connecting-to-testnet) を参照してください。ステートシンクを使ってください。パブリックセントリーは直近のブロックしか保持しません。
+
+手早い突き合わせには、コンセンサス RPC `https://rpc-testnet.qore.host`（ブロック、ハッシュ指定のトランザクション）、REST `https://api-testnet.qore.host`（アカウント、残高、モジュールの状態）、EVM WebSocket `wss://evm-ws-testnet.qore.host`、そして Testnet に切り替えた [explore.qore.network](https://explore.qore.network) のエクスプローラーを利用できます。
+
+### 有効な EVM ウィンドウがある状態で新しいウィンドウを開くとどうなりますか？ {#new-evm-window}
+
+新しいウィンドウが有効なウィンドウを置き換えるため、先に古いウィンドウを閉じる必要はありません。1つのアカウントが持てるウィンドウは一度に1つです。
+
+新しいウィンドウは、`usedTxs` と `usedValue` がゼロの状態で始まります。有効期限、`maxTxs`、`maxValue` は新しいメッセージだけから決まります。古いウィンドウからは何も引き継がれません。
+
+スコープもすべて置き換えられます。新しいメッセージに `allowed_targets` が指定されている場合、ウィンドウはそれらのアドレス宛てのトランザクションのみを許可し、コントラクトの作成を拒否します。そのため、このようなウィンドウを開く前にデプロイを済ませてください。新しいメッセージにリストがない場合は、古いウィンドウにリストがあっても、新しいウィンドウにはリストがありません。ブロードキャストした後は、EVM ウィンドウのクエリか `pqc_evm_window_opened` イベントで結果を確認してください。[EVM認可ウィンドウリファレンス](/developer-guide/evm-window-reference) を参照してください。
+
+### テストネットで CosmWasm コントラクトのコードを保存し、クロス VM 呼び出しを許可してもらうにはどうすればよいですか？ {#testnet-cosmwasm-allowlist}
+
+テストネットでは、CosmWasm コードのアップロードはガバナンスを通します。コードのアップロードを開き、あなたのコードを保存し、アップロードを再び閉じる提案を、過去に可決された提案（たとえば 27 と 50）と同じ形式で提出してください。他の人が確認できるように、ソース、再現可能なビルド、wasm ファイルの sha256 を公開してください。通常の提案には 10 QOR のデポジットが必要で、投票期間は 4 時間です。迅速な提案には 50 QOR が必要で、投票期間は 1 時間、より高い賛成票の割合が必要です。
+
+コードが保存され、コントラクトがインスタンス化されたら、2つ目の提案で、提案 40 と同じようにクロス VM の許可リストに追加します（`bridge_allowed_targets` と、`bridge_target_pins` のピン）。ガバナンス以外の admin を持つコントラクトは、ピン留めが必須です。その提案はモジュールのすべてのパラメータを置き換えるため、`https://api-testnet.qore.host/qorechain/crossvm/v1/params` から現在の値をコピーし、あなたのエントリを追加してください。提案が実行される時点で、コントラクトがすでに存在している必要があります。
+
+テストネットのバリデータが内容を確認して投票終了前に投票できるように、提案を提出したら、フェストのビルダー向けチャンネルに提案番号を投稿してください。正確なファイルとコマンドを含む全手順は、[コントラクト向けガバナンス提案](/developer-guide/governance-proposals-contracts) にあります。
+
 ## 関連項目
 
 * [ネットワーク](/appendix/networks) — チェーン ID、ポート、エンドポイントのリファレンス。

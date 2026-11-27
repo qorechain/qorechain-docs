@@ -81,6 +81,31 @@ Folosiți [QoreChain SDK](/sdk/overview), SDK-ul public pentru construirea de ap
 
 Botul comunitar QCAIA răspunde la întrebări pe Discord ([discord.gg/qorechain](https://discord.gg/qorechain)) și Telegram ([t.me/QoreChainCommunity](https://t.me/QoreChainCommunity)). Vezi [Botul comunitar QCAIA](/qcaia/overview).
 
+
+### Există un al doilea EVM RPC pentru testnet, operat independent? {#testnet-second-evm-rpc}
+
+Nu în prezent. `https://evm-testnet.qore.host` este singurul EVM JSON-RPC public pentru `qorechain-diana`, iar punctele finale publice ale testnet-ului sunt rulate de echipa QoreChain. Compararea lor verifică interfețe diferite, nu operatori independenți.
+
+Pentru o verificare cu adevărat independentă, rulați propriul nod de testnet cu JSON-RPC activat și interogați-l direct. Pagina [Conectarea la rețeaua de test](/getting-started/connecting-to-testnet) are binarul, genesis-ul, partenerii și state sync. Folosiți state sync: sentry-ul public păstrează doar blocurile recente.
+
+Pentru verificări încrucișate rapide puteți folosi RPC-ul de consens `https://rpc-testnet.qore.host` (blocuri, tranzacții după hash), REST `https://api-testnet.qore.host` (conturi, solduri, starea modulelor), EVM WebSocket `wss://evm-ws-testnet.qore.host` și exploratorul de la [explore.qore.network](https://explore.qore.network), comutat pe Testnet.
+
+### Ce se întâmplă dacă deschid o fereastră EVM nouă în timp ce alta este încă activă? {#new-evm-window}
+
+Fereastra nouă o înlocuiește pe cea activă, așa că nu trebuie să o închideți mai întâi pe cea veche. Un cont are o singură fereastră la un moment dat.
+
+Fereastra nouă începe cu `usedTxs` și `usedValue` la zero. Expirarea, `maxTxs` și `maxValue` ale ei vin doar din noul mesaj. Nimic nu se transferă din fereastra veche.
+
+Și domeniul este înlocuit în întregime. Dacă noul mesaj listează `allowed_targets`, fereastra permite doar tranzacții către acele adrese și refuză crearea de contracte, așa că terminați implementările înainte de a deschide o astfel de fereastră. Dacă noul mesaj nu are o listă, fereastra nouă nu are niciuna, chiar dacă cea veche avea una. După difuzare, verificați rezultatul cu interogarea ferestrei EVM sau în evenimentul `pqc_evm_window_opened`. Vezi [Referință fereastră EVM](/developer-guide/evm-window-reference).
+
+### Cum fac ca al meu contract CosmWasm să fie stocat și permis pentru apeluri între VM-uri pe testnet? {#testnet-cosmwasm-allowlist}
+
+Pe testnet, încărcarea codului CosmWasm trece prin guvernanță. Trimiteți o propunere care deschide încărcarea codului, stochează codul dumneavoastră și închide la loc încărcarea, în aceeași formă ca propunerile anterioare care au trecut (de exemplu 27 și 50). Publicați sursa, un build reproductibil și sha256-ul fișierului wasm, ca alții să îl poată verifica. O propunere obișnuită cere un depozit de 10 QOR și are un vot de 4 ore. Una accelerată cere 50 QOR, are un vot de 1 oră și are nevoie de o pondere mai mare a voturilor pentru.
+
+După ce codul este stocat și contractul este instanțiat, o a doua propunere îl adaugă în lista de permisiuni între VM-uri (`bridge_allowed_targets`, cu o fixare în `bridge_target_pins`), cum a făcut propunerea 40. Un contract cu un alt admin decât guvernanța trebuie fixat. Acea propunere înlocuiește toți parametrii modulului, așa că copiați valorile curente de la `https://api-testnet.qore.host/qorechain/crossvm/v1/params` și adăugați intrarea dumneavoastră. Contractul trebuie să existe deja când se execută propunerea.
+
+Postați numărul propunerii în canalul builderilor din fest când o trimiteți, ca validatorii de testnet să o poată analiza și vota înainte de încheierea votului. Pașii compleți, cu fișierele și comenzile exacte, sunt în [Propuneri de guvernanță pentru contracte](/developer-guide/governance-proposals-contracts).
+
 ## Resurse conexe
 
 * [Rețele](/appendix/networks) — referință pentru chain ID-uri, porturi și endpoint-uri.

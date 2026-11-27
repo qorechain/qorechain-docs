@@ -29,6 +29,8 @@ La version courte des ajouts de la v3.2.8 se trouve dans [Options de fenêtre aj
 | Fermer immédiatement | `/qorechain.pqc.v1.MsgCloseEVMWindow` | `qorechaind tx pqc close-evm-window` | aucune (une transaction) |
 | Lire | aucun | `qorechaind q pqc evm-window <address>` | `GET /qorechain/pqc/v1/evm_window/{address}` |
 
+Ouvrir une nouvelle fenêtre alors qu'une autre est active la remplace : `usedTxs` et `usedValue` repartent de zéro, et l'expiration, les limites et la portée proviennent uniquement du nouveau message.
+
 L'ouverture et la fermeture sont des transactions de la voie Native et exigent la signature hybride du compte (classique plus ML-DSA-87) ; le compte doit déjà détenir une clé post-quantique enregistrée pour ouvrir une fenêtre. Fermer une fenêtre retire aussi un consentement EIP-7702 en attente. L'ouverture **fait avancer le nonce du compte** (la séquence Native est le nonce EVM) : ouvrez donc d'abord la fenêtre et lisez le nonce EVM ensuite.
 
 ### CLI {#cli}
