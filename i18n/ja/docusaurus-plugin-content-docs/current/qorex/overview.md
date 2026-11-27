@@ -70,8 +70,8 @@ QoreX は非カストディアルです。QoreChain Association が、紛失し�
 | ビルド | 掲載名とパッケージ名 | 現在のバージョン | リンク |
 |---|---|---|---|
 | iOS アプリ | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
-| Android アプリ | Google Play, `network.qore.qorex` | 1.2.4 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Chrome 拡張機能 | Chrome Web Store, **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Android アプリ | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
+| Chrome 拡張機能 | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox 拡張機能 | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Safari 拡張機能 | Mac App Store, **QoreX Wallet** (id 6794132220) | アプリ 1.8.1、拡張機能 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | 開発者キット | npm パッケージ6つ、[開発者向け](#developers)を参照 | 0.1.0 | [QoreX integrations](/developer-tools/qorex-integrations) |
@@ -142,7 +142,7 @@ QoreX は非カストディアルです。QoreChain Association が、紛失し�
 ## どのバージョンがどこで提供されているか {#versions}
 
 :::note
-2026年11月25日時点で確認したバージョンです。iPhone アプリ 1.2.5 と Firefox 拡張機能 0.4.5 は公開されています。Android アプリ 1.2.5、Chrome 拡張機能 0.4.5、Safari 1.8.2 はストア審査中です。このマニュアルがこれらのバージョン向けに説明している機能は、お使いのストアで更新が提供された時点で利用できます。共有した支払いリンクの Web ページはまだ公開されていません。リンクは QoreX で開きます。
+2026年11月27日時点で確認したバージョンです。iPhone と Android のアプリ 1.2.5、Chrome と Firefox の拡張機能 0.4.5 は公開されています。拡張機能 0.4.5 を搭載した Safari 1.8.2 はストア審査中です。Safari では、このマニュアルが 0.4.5 向けに説明している機能は、Mac App Store で更新が提供された時点で利用できます。共有した支払いリンクの Web ページはまだ公開されていません。リンクは QoreX で開きます。
 :::
 
 ストアの審査は各ストアごとのスケジュールで進むため、あるストアが別のストアより古いビルドをしばらく配信することがあります。**各ストアの**現在のバージョンは次のとおりです。
@@ -150,8 +150,8 @@ QoreX は非カストディアルです。QoreChain Association が、紛失し�
 | ストア | 現在のバージョン | 備考 |
 |---|---|---|
 | Apple App Store（iOS） | 1.2.5 | |
-| Google Play（Android） | 1.2.4 | |
-| Chrome Web Store | 0.4.3 | |
+| Google Play（Android） | 1.2.5 | |
+| Chrome Web Store | 0.4.5 | |
 | Firefox Add-ons | 0.4.5 | |
 | Safari（Mac App Store） | 1.8.1（拡張機能 0.4.3 を搭載） | Mac App Store は独自の `1.x` 番号体系を使用します |
 

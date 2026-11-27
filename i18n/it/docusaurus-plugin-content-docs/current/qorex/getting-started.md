@@ -30,7 +30,7 @@ L'**app mobile QoreX** (iOS e Android) è il wallet completo di QoreChain nella 
 - **iOS**: l'App Store (iOS 15.1 o successivo): https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
-Le versioni attuali sono elencate in [Quale versione è attiva dove](/qorex/overview#versions): l'app iOS è la 1.2.5 e l'app Android la 1.2.4 (la 1.2.5 è in revisione nello store, al 25 novembre 2026). L'app è gratuita e non richiede un account. La mainnet `qorechain-vladi` è l'impostazione predefinita; **Impostazioni → Usa la testnet (sviluppatori)** passa a `qorechain-diana`. L'invio e lo staking pagano la normale commissione di rete (soglia minima 0,1 uqor per gas). L'app è disponibile in 10 lingue, incluso l'arabo con layout da destra a sinistra, e segue la lingua del telefono.
+Le versioni attuali sono elencate in [Quale versione è attiva dove](/qorex/overview#versions): l'app iOS e Android è la 1.2.5. L'app è gratuita e non richiede un account. La mainnet `qorechain-vladi` è l'impostazione predefinita; **Impostazioni → Usa la testnet (sviluppatori)** passa a `qorechain-diana`. L'invio e lo staking pagano la normale commissione di rete (soglia minima 0,1 uqor per gas). L'app è disponibile in 10 lingue, incluso l'arabo con layout da destra a sinistra, e segue la lingua del telefono.
 
 ## Come usarlo {#how-to-use}
 

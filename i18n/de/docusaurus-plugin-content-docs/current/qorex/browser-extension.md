@@ -50,14 +50,14 @@ Installieren Sie stets über einen dieser Einträge.
 ### Welche Version wo verfügbar ist {#versions}
 
 :::note
-Versionsstand, geprüft am 25. November 2026. Die iPhone-App 1.2.5 und die Firefox-Erweiterung 0.4.5 sind verfügbar. Die Android-App 1.2.5, die Chrome-Erweiterung 0.4.5 und Safari 1.8.2 sind in der Store-Prüfung: Die Funktionen, die dieses Handbuch dafür beschreibt, kommen, sobald Ihr Store das Update anbietet. Die Webseite hinter geteilten Zahlungslinks ist noch nicht online; die Links öffnen sich in QoreX.
+Versionsstand, geprüft am 27. November 2026. Die Apps 1.2.5 für iPhone und Android sowie die Erweiterungen 0.4.5 für Chrome und Firefox sind verfügbar. Safari 1.8.2 mit der Erweiterung 0.4.5 ist in der Store-Prüfung: In Safari kommen die Funktionen, die dieses Handbuch für 0.4.5 beschreibt, sobald der Mac App Store das Update anbietet. Die Webseite hinter geteilten Zahlungslinks ist noch nicht online; die Links öffnen sich in QoreX.
 :::
 
 Aktuelle Version in jedem Store:
 
 | Store | Aktuelle Version |
 |---|---|
-| Chrome Web Store | 0.4.3 |
+| Chrome Web Store | 0.4.5 |
 | Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store, macOS-App **QoreX Wallet**) | 1.8.1, die die Erweiterung 0.4.3 enthält (der Mac App Store verwendet seine eigene `1.x`-Nummerierung) |
 
@@ -392,7 +392,7 @@ Jede native QOR-Überweisung, die QoreX selbst initiiert, wird zweifach signiert
 
 | Store | Eintrag | Aktuelle Version | Link |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Mac App Store (Safari) | **QoreX Wallet**, App 1.8.1 | Erweiterung 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 

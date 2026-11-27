@@ -50,14 +50,14 @@ QoreX **브라우저 확장 프로그램**은 데스크톱용 QoreChain 지갑�
 ### 브라우저별로 어떤 버전이 서비스 중인가 {#versions}
 
 :::note
-2026년 11월 25일에 확인한 버전입니다. iPhone 앱 1.2.5와 Firefox 확장 프로그램 0.4.5는 출시되었습니다. Android 앱 1.2.5, Chrome 확장 프로그램 0.4.5, Safari 1.8.2는 스토어 심사 중입니다. 이 설명서가 해당 버전에 대해 설명하는 기능은 사용 중인 스토어에서 업데이트를 제공할 때 이용할 수 있습니다. 공유한 결제 링크의 웹 페이지는 아직 공개되지 않았으며, 링크는 QoreX에서 열립니다.
+2026년 11월 27일에 확인한 버전입니다. iPhone 및 Android 앱 1.2.5와 Chrome 및 Firefox 확장 프로그램 0.4.5는 출시되었습니다. 확장 프로그램 0.4.5가 포함된 Safari 1.8.2는 스토어 심사 중입니다. Safari에서는 이 설명서가 0.4.5에 대해 설명하는 기능을 Mac App Store에서 업데이트를 제공할 때 이용할 수 있습니다. 공유한 결제 링크의 웹 페이지는 아직 공개되지 않았으며, 링크는 QoreX에서 열립니다.
 :::
 
 각 스토어의 현재 버전:
 
 | 스토어 | 현재 버전 |
 |---|---|
-| Chrome Web Store | 0.4.3 |
+| Chrome Web Store | 0.4.5 |
 | Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store, **QoreX Wallet** macOS 앱) | 1.8.1, 확장 프로그램 0.4.3 포함 (Mac App Store는 자체 `1.x` 번호 체계를 사용합니다) |
 
@@ -392,7 +392,7 @@ QoreX가 직접 개시하는 모든 네이티브 QOR 전송은 두 번 서명됩
 
 | 스토어 | 등록 정보 | 현재 버전 | 링크 |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Mac App Store (Safari) | **QoreX Wallet**, 앱 1.8.1 | 확장 프로그램 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 

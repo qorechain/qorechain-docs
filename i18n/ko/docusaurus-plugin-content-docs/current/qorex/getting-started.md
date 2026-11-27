@@ -30,7 +30,7 @@ sidebar_position: 2
 - **iOS**: App Store(iOS 15.1 이상): https://apps.apple.com/us/app/qorex-wallet/id6791256626
 :::
 
-현재 버전은 [어느 버전이 어디에서 서비스 중인가](/qorex/overview#versions)에 나와 있습니다. iOS 앱은 1.2.5, Android 앱은 1.2.4입니다(1.2.5는 2026년 11월 25일 기준 스토어 심사 중). 앱은 무료이며 계정이 필요 없습니다. 메인넷 `qorechain-vladi`가 기본값이며, <strong>설정 → 테스트넷 사용(개발자)</strong>으로 `qorechain-diana`로 전환할 수 있습니다. 보내기와 스테이킹에는 일반 네트워크 수수료(가스당 최소 0.1 uqor)가 듭니다. 앱은 오른쪽에서 왼쪽으로 표시되는 아랍어를 포함해 10개 언어를 지원하며 휴대폰의 언어를 따릅니다.
+현재 버전은 [어느 버전이 어디에서 서비스 중인가](/qorex/overview#versions)에 나와 있습니다. iOS 및 Android 앱은 1.2.5입니다. 앱은 무료이며 계정이 필요 없습니다. 메인넷 `qorechain-vladi`가 기본값이며, <strong>설정 → 테스트넷 사용(개발자)</strong>으로 `qorechain-diana`로 전환할 수 있습니다. 보내기와 스테이킹에는 일반 네트워크 수수료(가스당 최소 0.1 uqor)가 듭니다. 앱은 오른쪽에서 왼쪽으로 표시되는 아랍어를 포함해 10개 언어를 지원하며 휴대폰의 언어를 따릅니다.
 
 ## 사용 방법 {#how-to-use}
 

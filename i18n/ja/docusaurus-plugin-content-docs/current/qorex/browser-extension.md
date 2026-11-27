@@ -50,14 +50,14 @@ QoreX の **ブラウザ拡張機能** は、デスクトップ向けの QoreCha
 ### どのバージョンがどこで提供されているか {#versions}
 
 :::note
-2026年11月25日時点で確認したバージョンです。iPhone アプリ 1.2.5 と Firefox 拡張機能 0.4.5 は公開されています。Android アプリ 1.2.5、Chrome 拡張機能 0.4.5、Safari 1.8.2 はストア審査中です。このマニュアルがこれらのバージョン向けに説明している機能は、お使いのストアで更新が提供された時点で利用できます。共有した支払いリンクの Web ページはまだ公開されていません。リンクは QoreX で開きます。
+2026年11月27日時点で確認したバージョンです。iPhone と Android のアプリ 1.2.5、Chrome と Firefox の拡張機能 0.4.5 は公開されています。拡張機能 0.4.5 を搭載した Safari 1.8.2 はストア審査中です。Safari では、このマニュアルが 0.4.5 向けに説明している機能は、Mac App Store で更新が提供された時点で利用できます。共有した支払いリンクの Web ページはまだ公開されていません。リンクは QoreX で開きます。
 :::
 
 各ストアの現在のバージョン:
 
 | ストア | 現在のバージョン |
 |---|---|
-| Chrome ウェブストア | 0.4.3 |
+| Chrome ウェブストア | 0.4.5 |
 | Firefox アドオン | 0.4.5 |
 | Safari(Mac App Store、**QoreX Wallet** macOS アプリ) | 1.8.1、拡張機能 0.4.3 を内蔵(Mac App Store は独自の `1.x` 番号体系を使用) |
 
@@ -392,7 +392,7 @@ QoreX 自身が開始するすべてのネイティブ QOR 送金は、`@qorecha
 
 | ストア | 掲載名 | 現在のバージョン | リンク |
 |---|---|---|---|
-| Chrome ウェブストア | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome ウェブストア | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox アドオン | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Mac App Store(Safari) | **QoreX Wallet**、アプリ 1.8.1 | 拡張機能 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 

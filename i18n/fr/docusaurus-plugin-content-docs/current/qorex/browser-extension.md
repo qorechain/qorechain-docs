@@ -50,14 +50,14 @@ Installez toujours depuis l'une de ces fiches.
 ### Quelle version est en ligne où {#versions}
 
 :::note
-Versions vérifiées le 25 novembre 2026. L'application iPhone 1.2.5 et l'extension Firefox 0.4.5 sont disponibles. L'application Android 1.2.5, l'extension Chrome 0.4.5 et Safari 1.8.2 sont en cours d'examen par les boutiques : les fonctions que ce manuel décrit pour elles arrivent dès que votre boutique propose la mise à jour. La page web des liens de paiement partagés n'est pas encore en ligne ; les liens s'ouvrent dans QoreX.
+Versions vérifiées le 27 novembre 2026. Les applications 1.2.5 pour iPhone et Android et les extensions 0.4.5 pour Chrome et Firefox sont disponibles. Safari 1.8.2, qui intègre l'extension 0.4.5, est en cours d'examen par la boutique : sur Safari, les fonctions que ce manuel décrit pour la 0.4.5 arrivent dès que le Mac App Store propose la mise à jour. La page web des liens de paiement partagés n'est pas encore en ligne ; les liens s'ouvrent dans QoreX.
 :::
 
 Version actuelle sur chaque store :
 
 | Boutique | Version actuelle |
 |---|---|
-| Chrome Web Store | 0.4.3 |
+| Chrome Web Store | 0.4.5 |
 | Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store, application macOS **QoreX Wallet**) | 1.8.1, intégrant l'extension 0.4.3 (le Mac App Store utilise sa propre numérotation `1.x`) |
 
@@ -392,7 +392,7 @@ Chaque transfert QOR natif initié par QoreX lui-même est signé deux fois : av
 
 | Boutique | Fiche | Version actuelle | Lien |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Mac App Store (Safari) | **QoreX Wallet**, application 1.8.1 | extension 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 

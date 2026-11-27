@@ -70,8 +70,8 @@ QoreX est non-custodial : QoreChain Association ne peut ni récupérer un portef
 | Build | Fiche et nom du paquet | Version actuelle | Lien |
 |---|---|---|---|
 | Application iOS | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
-| Application Android | Google Play, `network.qore.qorex` | 1.2.4 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Extension Chrome | Chrome Web Store, **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Application Android | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
+| Extension Chrome | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Extension Firefox | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Extension Safari | Mac App Store, **QoreX Wallet** (id 6794132220) | app 1.8.1, extension 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | Kit développeur | six paquets npm, voir [Pour les développeurs](#developers) | 0.1.0 | [Intégrations QoreX](/developer-tools/qorex-integrations) |
@@ -142,7 +142,7 @@ Installez depuis les fiches officielles de [Comment y accéder](#how-to-access).
 ## Quelle version est disponible où {#versions}
 
 :::note
-Versions vérifiées le 25 novembre 2026. L'application iPhone 1.2.5 et l'extension Firefox 0.4.5 sont disponibles. L'application Android 1.2.5, l'extension Chrome 0.4.5 et Safari 1.8.2 sont en cours d'examen par les boutiques : les fonctions que ce manuel décrit pour elles arrivent dès que votre boutique propose la mise à jour. La page web des liens de paiement partagés n'est pas encore en ligne ; les liens s'ouvrent dans QoreX.
+Versions vérifiées le 27 novembre 2026. Les applications 1.2.5 pour iPhone et Android et les extensions 0.4.5 pour Chrome et Firefox sont disponibles. Safari 1.8.2, qui intègre l'extension 0.4.5, est en cours d'examen par la boutique : sur Safari, les fonctions que ce manuel décrit pour la 0.4.5 arrivent dès que le Mac App Store propose la mise à jour. La page web des liens de paiement partagés n'est pas encore en ligne ; les liens s'ouvrent dans QoreX.
 :::
 
 L'examen par les stores suit son propre calendrier ; un store peut donc servir pendant un temps une version plus ancienne qu'un autre. Voici la version actuelle **sur chaque store** :
@@ -150,8 +150,8 @@ L'examen par les stores suit son propre calendrier ; un store peut donc servir p
 | Store | Version actuelle | Remarque |
 |---|---|---|
 | Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.4 | |
-| Chrome Web Store | 0.4.3 | |
+| Google Play (Android) | 1.2.5 | |
+| Chrome Web Store | 0.4.5 | |
 | Firefox Add-ons | 0.4.5 | |
 | Safari (Mac App Store) | 1.8.1, intégrant l'extension 0.4.3 | le Mac App Store utilise sa propre numérotation `1.x` |
 

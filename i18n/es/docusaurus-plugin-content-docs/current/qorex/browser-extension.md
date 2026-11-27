@@ -50,14 +50,14 @@ Instala siempre desde una de estas fichas.
 ### Qué versión está activa en cada uno {#versions}
 
 :::note
-Versiones comprobadas el 25 de noviembre de 2026. La app para iPhone 1.2.5 y la extensión para Firefox 0.4.5 ya están disponibles. La app para Android 1.2.5, la extensión para Chrome 0.4.5 y Safari 1.8.2 están en revisión de las tiendas: las funciones que este manual describe para ellas llegan cuando tu tienda ofrezca la actualización. La página web de los enlaces de pago compartidos todavía no está en línea; los enlaces se abren en QoreX.
+Versiones comprobadas el 27 de noviembre de 2026. Las apps 1.2.5 para iPhone y Android y las extensiones 0.4.5 para Chrome y Firefox ya están disponibles. Safari 1.8.2, que incluye la extensión 0.4.5, está en revisión de la tienda: en Safari, las funciones que este manual describe para la 0.4.5 llegan cuando la Mac App Store ofrezca la actualización. La página web de los enlaces de pago compartidos todavía no está en línea; los enlaces se abren en QoreX.
 :::
 
 Versión actual en cada tienda:
 
 | Tienda | Versión actual |
 |---|---|
-| Chrome Web Store | 0.4.3 |
+| Chrome Web Store | 0.4.5 |
 | Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store, app de macOS **QoreX Wallet**) | 1.8.1, que incluye la extensión 0.4.3 (la Mac App Store usa su propia numeración `1.x`) |
 
@@ -392,7 +392,7 @@ Cada transferencia nativa de QOR que QoreX inicia por sí misma se firma dos vec
 
 | Tienda | Ficha | Versión actual | Enlace |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Mac App Store (Safari) | **QoreX Wallet**, app 1.8.1 | extensión 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 

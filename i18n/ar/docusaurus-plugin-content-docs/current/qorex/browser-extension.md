@@ -50,14 +50,14 @@ sidebar_position: 2
 ### أي إصدار متاح وأين {#versions}
 
 :::note
-الإصدارات كما تم التحقق منها في 25 نوفمبر 2026. تطبيق iPhone بالإصدار 1.2.5 وإضافة Firefox بالإصدار 0.4.5 متاحان الآن. أما تطبيق Android بالإصدار 1.2.5 وإضافة Chrome بالإصدار 0.4.5 وإصدار Safari 1.8.2 فهي قيد مراجعة المتاجر: تصل الميزات التي يصفها هذا الدليل لها عندما يقدّم متجرك التحديث. صفحة الويب الخاصة بروابط الدفع المشارَكة ليست متاحة على الإنترنت بعد؛ تُفتح الروابط في QoreX.
+الإصدارات كما تم التحقق منها في 27 نوفمبر 2026. تطبيقا iPhone وAndroid بالإصدار 1.2.5 وإضافتا Chrome وFirefox بالإصدار 0.4.5 متاحة الآن. أما Safari 1.8.2، الذي يحمل الإضافة 0.4.5، فهو قيد مراجعة المتجر: على Safari تصل الميزات التي يصفها هذا الدليل للإصدار 0.4.5 عندما يقدّم Mac App Store التحديث. صفحة الويب الخاصة بروابط الدفع المشارَكة ليست متاحة على الإنترنت بعد؛ تُفتح الروابط في QoreX.
 :::
 
 الإصدار الحالي في كل متجر:
 
 | المتجر | الإصدار الحالي |
 |---|---|
-| Chrome Web Store | 0.4.3 |
+| Chrome Web Store | 0.4.5 |
 | Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store، تطبيق **QoreX Wallet** لنظام macOS) | 1.8.1، ويحمل الإضافة 0.4.3 (ويستخدم Mac App Store ترقيمه الخاص `1.x`) |
 
@@ -392,7 +392,7 @@ QoreX مبني ليكون قابلًا للتحقق، لا ليكون محل ث�
 
 | المتجر | الصفحة | الإصدار الحالي | الرابط |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Mac App Store (Safari) | **QoreX Wallet**، التطبيق 1.8.1 | الإضافة 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 

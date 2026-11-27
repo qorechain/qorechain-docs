@@ -70,8 +70,8 @@ QoreX este non-custodial: QoreChain Association nu poate recupera, reseta sau re
 | Versiune | Listare și nume de pachet | Versiunea curentă | Link |
 |---|---|---|---|
 | Aplicația iOS | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
-| Aplicația Android | Google Play, `network.qore.qorex` | 1.2.4 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Extensia Chrome | Chrome Web Store, **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Aplicația Android | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
+| Extensia Chrome | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Extensia Firefox | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Extensia Safari | Mac App Store, **QoreX Wallet** (id 6794132220) | aplicația 1.8.1, extensia 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | Kitul pentru dezvoltatori | șase pachete npm, vezi [Pentru dezvoltatori](#developers) | 0.1.0 | [Integrări QoreX](/developer-tools/qorex-integrations) |
@@ -142,7 +142,7 @@ Instalează din listările oficiale de la [Cum accesezi](#how-to-access). Aplica
 ## Ce versiune este disponibilă unde {#versions}
 
 :::note
-Versiuni verificate pe 25 noiembrie 2026. Aplicația pentru iPhone 1.2.5 și extensia pentru Firefox 0.4.5 sunt disponibile. Aplicația pentru Android 1.2.5, extensia pentru Chrome 0.4.5 și Safari 1.8.2 sunt în verificare la magazine: funcțiile pe care acest manual le descrie pentru ele ajung la tine când magazinul tău oferă actualizarea. Pagina web a linkurilor de plată distribuite nu este încă online; linkurile se deschid în QoreX.
+Versiuni verificate pe 27 noiembrie 2026. Aplicațiile 1.2.5 pentru iPhone și Android și extensiile 0.4.5 pentru Chrome și Firefox sunt disponibile. Safari 1.8.2, care conține extensia 0.4.5, este în verificare la magazin: pe Safari, funcțiile pe care acest manual le descrie pentru 0.4.5 ajung la tine când Mac App Store oferă actualizarea. Pagina web a linkurilor de plată distribuite nu este încă online; linkurile se deschid în QoreX.
 :::
 
 Revizuirea din magazine se desfășoară după propriul program, astfel încât un magazin poate servi pentru o vreme o versiune mai veche decât altul. Aceasta este versiunea curentă din fiecare magazin:
@@ -150,8 +150,8 @@ Revizuirea din magazine se desfășoară după propriul program, astfel încât 
 | Magazin | Versiune curentă | Notă |
 |---|---|---|
 | Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.4 | |
-| Chrome Web Store | 0.4.3 | |
+| Google Play (Android) | 1.2.5 | |
+| Chrome Web Store | 0.4.5 | |
 | Firefox Add-ons | 0.4.5 | |
 | Safari (Mac App Store) | 1.8.1, cu extensia 0.4.3 | Mac App Store folosește propria numerotare `1.x` |
 

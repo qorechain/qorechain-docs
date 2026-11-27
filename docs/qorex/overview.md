@@ -70,8 +70,8 @@ QoreX is non-custodial: QoreChain Association cannot recover a lost wallet, rese
 | Build | Listing and package name | Current version | Link |
 |---|---|---|---|
 | iOS app | App Store, **QoreX** (id 6791256626) | 1.2.5 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6791256626) |
-| Android app | Google Play, `network.qore.qorex` | 1.2.4 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
-| Chrome extension | Chrome Web Store, **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Android app | Google Play, `network.qore.qorex` | 1.2.5 | [play.google.com](https://play.google.com/store/apps/details?id=network.qore.qorex) |
+| Chrome extension | Chrome Web Store, **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox extension | Firefox Add-ons, `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Safari extension | Mac App Store, **QoreX Wallet** (id 6794132220) | app 1.8.1, extension 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 | Developer kit | six npm packages, see [For developers](#developers) | 0.1.0 | [QoreX integrations](/developer-tools/qorex-integrations) |
@@ -142,7 +142,7 @@ Install from the official listings in [How to access](#how-to-access). The Andro
 ## Which version is live where {#versions}
 
 :::note
-Versions as checked on 25 November 2026. The iPhone app 1.2.5 and the Firefox extension 0.4.5 are live. The Android app 1.2.5, the Chrome extension 0.4.5 and Safari 1.8.2 are in store review: the features this manual describes for them arrive when your store offers the update. The web page behind shared payment links is not online yet; the links open in QoreX.
+Versions as checked on 27 November 2026. The iPhone and Android apps 1.2.5 and the Chrome and Firefox extensions 0.4.5 are live. Safari 1.8.2, which carries extension 0.4.5, is in store review: on Safari, the features this manual describes for 0.4.5 arrive when the Mac App Store offers the update. The web page behind shared payment links is not online yet; the links open in QoreX.
 :::
 
 Store review runs on its own schedule, so a store can serve an older build than another for a while. This is the current version **on each store**:
@@ -150,8 +150,8 @@ Store review runs on its own schedule, so a store can serve an older build than 
 | Store | Current version | Note |
 |---|---|---|
 | Apple App Store (iOS) | 1.2.5 | |
-| Google Play (Android) | 1.2.4 | |
-| Chrome Web Store | 0.4.3 | |
+| Google Play (Android) | 1.2.5 | |
+| Chrome Web Store | 0.4.5 | |
 | Firefox Add-ons | 0.4.5 | |
 | Safari (Mac App Store) | 1.8.1, carrying extension 0.4.3 | the Mac App Store uses its own `1.x` numbering |
 

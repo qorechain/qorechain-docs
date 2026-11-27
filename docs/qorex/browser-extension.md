@@ -50,14 +50,14 @@ Always install from one of these listings.
 ### Which version is live where {#versions}
 
 :::note
-Versions as checked on 25 November 2026. The iPhone app 1.2.5 and the Firefox extension 0.4.5 are live. The Android app 1.2.5, the Chrome extension 0.4.5 and Safari 1.8.2 are in store review: the features this manual describes for them arrive when your store offers the update. The web page behind shared payment links is not online yet; the links open in QoreX.
+Versions as checked on 27 November 2026. The iPhone and Android apps 1.2.5 and the Chrome and Firefox extensions 0.4.5 are live. Safari 1.8.2, which carries extension 0.4.5, is in store review: on Safari, the features this manual describes for 0.4.5 arrive when the Mac App Store offers the update. The web page behind shared payment links is not online yet; the links open in QoreX.
 :::
 
 Current version on each store:
 
 | Store | Current version |
 |---|---|
-| Chrome Web Store | 0.4.3 |
+| Chrome Web Store | 0.4.5 |
 | Firefox Add-ons | 0.4.5 |
 | Safari (Mac App Store, **QoreX Wallet** macOS app) | 1.8.1, carrying extension 0.4.3 (the Mac App Store uses its own `1.x` numbering) |
 
@@ -392,7 +392,7 @@ Every native QOR transfer QoreX itself initiates is signed twice: with a classic
 
 | Store | Listing | Current version | Link |
 |---|---|---|---|
-| Chrome Web Store | **QoreX** | 0.4.3 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
+| Chrome Web Store | **QoreX** | 0.4.5 | [chromewebstore.google.com](https://chromewebstore.google.com/detail/qorex/cflpnggbnnifibblifgbeobogdpfjpcg) |
 | Firefox Add-ons | `qorex` | 0.4.5 | [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/qorex/) |
 | Mac App Store (Safari) | **QoreX Wallet**, app 1.8.1 | extension 0.4.3 | [apps.apple.com](https://apps.apple.com/us/app/qorex-wallet/id6794132220) |
 
