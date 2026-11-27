@@ -51,7 +51,7 @@ Installa sempre da una di queste schede.
 ### Quale versione è live dove {#versions}
 
 :::note
-Versioni verificate il 27 novembre 2026. Le app 1.2.5 per iPhone e Android e le estensioni 0.4.5 per Chrome e Firefox sono disponibili. Safari 1.8.2, che include l'estensione 0.4.5, è in revisione nello store: su Safari le funzioni che questo manuale descrive per la 0.4.5 arrivano quando il Mac App Store propone l'aggiornamento. La pagina web dei link di pagamento condivisi non è ancora online; i link si aprono in QoreX.
+Versioni verificate il 27 novembre 2026. Le app 1.2.5 per iPhone e Android e le estensioni 0.4.5 per Chrome e Firefox sono disponibili. Safari 1.8.2, che include l'estensione 0.4.5, è in revisione nello store: su Safari le funzioni che questo manuale descrive per la 0.4.5 arrivano quando il Mac App Store propone l'aggiornamento. La pagina web dei link di pagamento condivisi è online; vedi [Aprire un link di pagamento senza l'app](/qorex/send-and-receive#pay-web).
 :::
 
 Versione attuale su ciascuno store:

@@ -83,7 +83,7 @@ Ask someone for an amount of QOR with a signed link that you share or copy. It w
 3. Tap **Create link**. QoreX signs the request with your own account key and shows *"Your request is ready. Anyone can pay it, in QoreX or in another wallet."*
 4. **Share link** or **Copy link**.
 
-The link is signed with your account key, so a changed amount or address is detected. The key must belong to the receiving address: nobody else can re-sign an altered link in your name. The signature is an integrity check on the link only; the payment itself is signed normally by the payer, with the hybrid signature on the native lane. The link format is `qorex://pay?v=1&...` and it names the exact network (mainnet or testnet). What **Share link** and **Copy link** give you is a payment link that opens in QoreX; it starts with `https://link.qore.network/pay?`.
+The link is signed with your account key, so a changed amount or address is detected. The key must belong to the receiving address: nobody else can re-sign an altered link in your name. The signature is an integrity check on the link only; the payment itself is signed normally by the payer, with the hybrid signature on the native lane. The link format is `qorex://pay?v=1&...` and it names the exact network (mainnet or testnet). What **Share link** and **Copy link** give you is a payment link that opens in QoreX; it starts with `https://link.qore.network/pay?`. Without the app, the same link shows a web page: see [Opening a payment link without the app](#pay-web).
 
 The **Request** button on the app's Home asks a particular QoreX user by their @handle (it needs [sign-in](/qorex/account-and-dashboard#sign-in) and your own @handle). Once created, that request can also be shared as a signed link.
 
@@ -99,6 +99,14 @@ QoreX pays requests in QOR only for now. A testnet request says *"Testnet reques
 **Follow and reuse**
 
 **My requests** lists the requests you created. Each one shows **Paid** or **Not paid yet**, read from the chain: QoreX looks for a matching payment (the memo tag on the transfer), and it is marked paid only when the chain shows it. If the network does not answer it says *Status unknown*, never a guess. **Check status** asks again. **Reuse next month** makes a new request with the same details and a new id. With an @handle you also see **Requests to me** and **Requests I sent by @handle**.
+
+### Opening a payment link without the app {#pay-web}
+
+On an iPhone or Android phone with QoreX 1.2.5, a `https://link.qore.network/pay?` link opens the app. Without the app, it shows a web page, in English. The page checks the signature in your browser, including that the signer owns the receiving address, and refuses a link that fails, with the reason. It makes no network requests of its own to check or show the request, and has no analytics or cookies. For a valid link it shows the amount, the recipient, any note, the memo tag and the network. It cannot check an @handle: QoreX checks it with the registry before you pay. The page offers:
+
+- **Open in QoreX**.
+- **Pay with Keplr**. This does not send the payment. It adds QoreChain to Keplr and shows your Keplr address, with buttons to copy the recipient address, the amount and the memo. It does not ask Keplr to sign, because QoreChain requires a post-quantum (hybrid) signature on this payment and Keplr cannot add it by itself today. Pay in QoreX or in another wallet that signs QoreChain payments, and keep the memo exactly as it is.
+- **Pay with MetaMask** (QOR only, on the EVM lane). The account you pay from first needs an [EVM access window](/qorex/browser-extension#evm-window) that you open in QoreX; without it the network refuses the payment. MetaMask's signature is classical (secp256k1). A MetaMask payment carries no memo, so the request is **not** marked paid automatically: tell the requester, who has to confirm it by hand.
 
 ## Contacts and favourites {#contacts}
 

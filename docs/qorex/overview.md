@@ -142,7 +142,7 @@ Install from the official listings in [How to access](#how-to-access). The Andro
 ## Which version is live where {#versions}
 
 :::note
-Versions as checked on 27 November 2026. The iPhone and Android apps 1.2.5 and the Chrome and Firefox extensions 0.4.5 are live. Safari 1.8.2, which carries extension 0.4.5, is in store review: on Safari, the features this manual describes for 0.4.5 arrive when the Mac App Store offers the update. The web page behind shared payment links is not online yet; the links open in QoreX.
+Versions as checked on 27 November 2026. The iPhone and Android apps 1.2.5 and the Chrome and Firefox extensions 0.4.5 are live. Safari 1.8.2, which carries extension 0.4.5, is in store review: on Safari, the features this manual describes for 0.4.5 arrive when the Mac App Store offers the update. The web page behind shared payment links is online; see [Opening a payment link without the app](/qorex/send-and-receive#pay-web).
 :::
 
 Store review runs on its own schedule, so a store can serve an older build than another for a while. This is the current version **on each store**:

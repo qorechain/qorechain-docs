@@ -324,7 +324,7 @@ qorex://pay?v=1&net=qorechain-vladi&to=qor1...&amt=1500000&d=uqor&id=pr_...&tag=
 
 A payment request link carries the recipient, the amount in base units, the denomination, a request id and its memo tag, an optional note and @handle, the network, and a signature by the recipient's own account key over all of it. The payer's QoreX checks the signature, that the signing key owns the recipient address, the exact network, and any @handle, then shows the normal review before sending. An altered amount or recipient is detected, and the request is marked paid by reading the chain.
 
-**Generate it with QoreX's own request screen** (app, **Payment requests**, **New request**) rather than by hand: the signature is made with the account key, which a page never holds. Treat a link you build or alter yourself as unsupported. A web form of the link is not available yet.
+**Generate it with QoreX's own request screen** (app, **Payment requests**, **New request**) rather than by hand: the signature is made with the account key, which a page never holds. Treat a link you build or alter yourself as unsupported. The same request also has a web form, `https://link.qore.network/pay?v=1&...`, with the same parameters. On an iPhone or Android phone with QoreX 1.2.5 it opens the app; elsewhere it shows [the payment request web page](/qorex/send-and-receive#pay-web).
 
 ### Hand over an agent proposal: `qorex://propose` {#link-propose}
 

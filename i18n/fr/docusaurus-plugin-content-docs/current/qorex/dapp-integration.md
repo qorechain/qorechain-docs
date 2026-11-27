@@ -324,7 +324,7 @@ qorex://pay?v=1&net=qorechain-vladi&to=qor1...&amt=1500000&d=uqor&id=pr_...&tag=
 
 Un lien de demande de paiement porte le destinataire, le montant en unités de base, la dénomination, un identifiant de demande et son étiquette de mémo, une note et un @handle facultatifs, le réseau, ainsi qu'une signature de l'ensemble par la clé du compte du destinataire lui-même. Le QoreX du payeur vérifie la signature, que la clé signataire possède l'adresse du destinataire, le réseau exact et tout @handle, puis affiche la vérification habituelle avant l'envoi. Un montant ou un destinataire modifié est détecté, et la demande est marquée comme payée par lecture de la chaîne.
 
-**Générez-le avec l'écran de demande de QoreX** (application, **Demandes de paiement**, **Nouvelle demande**) plutôt qu'à la main : la signature est faite avec la clé du compte, qu'une page ne détient jamais. Considérez comme non pris en charge un lien que vous construisez ou modifiez vous-même. Une forme web du lien n'est pas encore disponible.
+**Générez-le avec l'écran de demande de QoreX** (application, **Demandes de paiement**, **Nouvelle demande**) plutôt qu'à la main : la signature est faite avec la clé du compte, qu'une page ne détient jamais. Considérez comme non pris en charge un lien que vous construisez ou modifiez vous-même. La même demande existe aussi sous forme web, `https://link.qore.network/pay?v=1&...`, avec les mêmes paramètres. Sur un iPhone ou un téléphone Android avec QoreX 1.2.5, elle ouvre l'application ; sinon elle affiche [la page web de la demande de paiement](/qorex/send-and-receive#pay-web).
 
 ### Transmettre une proposition d'agent : `qorex://propose` {#link-propose}
 

@@ -83,7 +83,7 @@ Chiedi a qualcuno un importo in QOR con un link firmato da condividere o copiare
 3. Tocca **Crea link**. QoreX firma la richiesta con la chiave del tuo account e mostra *"La tua richiesta è pronta. Chiunque può pagarla, in QoreX o in un altro wallet."*
 4. **Condividi link** o **Copia link**.
 
-Il link è firmato con la chiave del tuo account, quindi un importo o un indirizzo modificato viene rilevato. La chiave deve appartenere all'indirizzo che riceve: nessun altro può rifirmare a tuo nome un link alterato. La firma è solo un controllo di integrità del link; il pagamento stesso viene firmato normalmente da chi paga, con la firma ibrida sulla lane nativa. Il formato del link è `qorex://pay?v=1&...` e nomina la rete esatta (mainnet o testnet). **Condividi link** e **Copia link** forniscono un link di pagamento che si apre in QoreX; inizia con `https://link.qore.network/pay?`.
+Il link è firmato con la chiave del tuo account, quindi un importo o un indirizzo modificato viene rilevato. La chiave deve appartenere all'indirizzo che riceve: nessun altro può rifirmare a tuo nome un link alterato. La firma è solo un controllo di integrità del link; il pagamento stesso viene firmato normalmente da chi paga, con la firma ibrida sulla lane nativa. Il formato del link è `qorex://pay?v=1&...` e nomina la rete esatta (mainnet o testnet). **Condividi link** e **Copia link** forniscono un link di pagamento che si apre in QoreX; inizia con `https://link.qore.network/pay?`. Senza l'app, lo stesso link mostra una pagina web: vedi [Aprire un link di pagamento senza l'app](#pay-web).
 
 Il pulsante **Richiedi** nella Home dell'app chiede a un determinato utente di QoreX tramite il suo @handle (richiede l'[accesso](/qorex/account-and-dashboard#sign-in) e un tuo @handle). Una volta creata, anche quella richiesta può essere condivisa come link firmato.
 
@@ -99,6 +99,14 @@ Per ora QoreX paga le richieste solo in QOR. Una richiesta su testnet dice *"Ric
 **Seguire e riutilizzare**
 
 **Le mie richieste** elenca le richieste che hai creato. Ognuna mostra **Pagata** o **Non ancora pagata**, letto dalla chain: QoreX cerca un pagamento corrispondente (il tag memo sul trasferimento), e la richiesta viene contrassegnata come pagata solo quando la chain lo mostra. Se la rete non risponde dice *Stato sconosciuto: la rete non ha risposto*, mai un'ipotesi. **Controlla lo stato** chiede di nuovo. **Riusa il mese prossimo** crea una nuova richiesta con gli stessi dettagli e un nuovo id. Con un @handle vedi anche **Richieste a me** e **Richieste inviate tramite @handle**.
+
+### Aprire un link di pagamento senza l'app {#pay-web}
+
+Su un iPhone o un telefono Android con QoreX 1.2.5, un link `https://link.qore.network/pay?` apre l'app. Senza l'app mostra una pagina web, in inglese. La pagina controlla la firma nel tuo browser, compreso il fatto che il firmatario possieda l'indirizzo di ricezione, e rifiuta un link che non supera il controllo, indicando il motivo. Non effettua richieste di rete proprie per controllare o mostrare la richiesta, e non ha strumenti di analisi né cookie. Per un link valido mostra l'importo, il destinatario, l'eventuale nota, l'etichetta del memo e la rete. Non può controllare un @handle: QoreX lo controlla nel registro prima che tu paghi. La pagina offre:
+
+- **Open in QoreX**.
+- **Pay with Keplr**. Questa opzione non invia il pagamento. Aggiunge QoreChain a Keplr e mostra il tuo indirizzo Keplr, con pulsanti per copiare l'indirizzo del destinatario, l'importo e il memo. Non chiede a Keplr di firmare, perché per questo pagamento QoreChain richiede una firma post-quantistica (ibrida) che oggi Keplr non può aggiungere da solo. Paga in QoreX o in un altro wallet che firma i pagamenti QoreChain, e mantieni il memo identico.
+- **Pay with MetaMask** (solo QOR, sulla corsia EVM). L'account da cui paghi ha prima bisogno di una [finestra di accesso EVM](/qorex/browser-extension#evm-window) che apri in QoreX; senza, la rete rifiuta il pagamento. La firma di MetaMask è classica (secp256k1). Un pagamento con MetaMask non porta alcun memo, quindi la richiesta **non** viene segnata come pagata automaticamente: avvisa chi l'ha creata, che deve confermarla a mano.
 
 ## Contatti e preferiti {#contacts}
 

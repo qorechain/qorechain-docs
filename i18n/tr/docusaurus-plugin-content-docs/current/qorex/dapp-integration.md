@@ -324,7 +324,7 @@ qorex://pay?v=1&net=qorechain-vladi&to=qor1...&amt=1500000&d=uqor&id=pr_...&tag=
 
 Bir ödeme isteği bağlantısı alıcıyı, temel birimlerle tutarı, para birimi kodunu (denom), bir istek kimliğini ve memo etiketini, isteğe bağlı bir not ve @handle'ı, ağı ve tüm bunların üzerinde alıcının kendi hesap anahtarıyla atılmış bir imzayı taşır. Ödeyenin QoreX'i imzayı, imzalama anahtarının alıcı adresine sahip olduğunu, tam ağı ve varsa @handle'ı kontrol eder, ardından göndermeden önce normal incelemeyi gösterir. Değiştirilmiş bir tutar veya alıcı algılanır ve istek, zincir okunarak ödendi olarak işaretlenir.
 
-**Bağlantıyı elle değil, QoreX'in kendi istek ekranıyla** (uygulama, **Ödeme istekleri**, **Yeni istek**) üretin: imza, bir sayfanın asla tutmadığı hesap anahtarıyla atılır. Kendi oluşturduğunuz veya değiştirdiğiniz bir bağlantıyı desteklenmiyor kabul edin. Bağlantının web formu henüz mevcut değildir.
+**Bağlantıyı elle değil, QoreX'in kendi istek ekranıyla** (uygulama, **Ödeme istekleri**, **Yeni istek**) üretin: imza, bir sayfanın asla tutmadığı hesap anahtarıyla atılır. Kendi oluşturduğunuz veya değiştirdiğiniz bir bağlantıyı desteklenmiyor kabul edin. Aynı isteğin, aynı parametreleri taşıyan bir web biçimi de vardır: `https://link.qore.network/pay?v=1&...`. QoreX 1.2.5 yüklü bir iPhone veya Android telefonda uygulamayı açar; diğer durumlarda [ödeme isteği web sayfasını](/qorex/send-and-receive#pay-web) gösterir.
 
 ### Ajan önerisi iletme: `qorex://propose` {#link-propose}
 

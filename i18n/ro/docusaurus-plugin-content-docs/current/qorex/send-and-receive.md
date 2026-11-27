@@ -83,7 +83,7 @@ Cere cuiva o sumă de QOR cu un link semnat pe care îl distribui sau îl copiez
 3. Atinge **Creează linkul**. QoreX semnează cererea cu cheia propriului tău cont și arată *"Cererea ta e gata. Oricine o poate plăti, în QoreX sau în alt portofel."*
 4. **Distribuie linkul** sau **Copiază linkul**.
 
-Linkul este semnat cu cheia contului tău, așa că o sumă sau o adresă modificată este detectată. Cheia trebuie să aparțină adresei de primire: nimeni altcineva nu poate re-semna în numele tău un link modificat. Semnătura este doar o verificare a integrității linkului; plata însăși este semnată în mod normal de plătitor, cu semnătura hibridă pe lane-ul nativ. Formatul linkului este `qorex://pay?v=1&...` și numește rețeaua exactă (mainnet sau testnet). Ce primești prin **Distribuie linkul** și **Copiază linkul** este un link de plată care se deschide în QoreX; începe cu `https://link.qore.network/pay?`.
+Linkul este semnat cu cheia contului tău, așa că o sumă sau o adresă modificată este detectată. Cheia trebuie să aparțină adresei de primire: nimeni altcineva nu poate re-semna în numele tău un link modificat. Semnătura este doar o verificare a integrității linkului; plata însăși este semnată în mod normal de plătitor, cu semnătura hibridă pe lane-ul nativ. Formatul linkului este `qorex://pay?v=1&...` și numește rețeaua exactă (mainnet sau testnet). Ce primești prin **Distribuie linkul** și **Copiază linkul** este un link de plată care se deschide în QoreX; începe cu `https://link.qore.network/pay?`. Fără aplicație, același link afișează o pagină web: vezi [Deschiderea unui link de plată fără aplicație](#pay-web).
 
 Butonul **Cere** de pe Acasă în aplicație cere unui anumit utilizator QoreX prin @handle (are nevoie de [autentificare](/qorex/account-and-dashboard#sign-in) și de propriul tău @handle). Odată creată, cererea respectivă poate fi distribuită și ca link semnat.
 
@@ -99,6 +99,14 @@ Deocamdată, QoreX plătește cererile doar în QOR. O cerere de testnet spune *
 **Urmărește și refolosește**
 
 **Cererile mele** listează cererile pe care le-ai creat. Fiecare arată **Plătită** sau **Neplătită încă**, citit din lanț: QoreX caută o plată care se potrivește (eticheta din memo de pe transfer), iar cererea este marcată plătită doar când lanțul o arată. Dacă rețeaua nu răspunde, spune *Stare necunoscută*, niciodată o presupunere. **Verifică starea** întreabă din nou. **Refolosește luna viitoare** creează o cerere nouă cu aceleași detalii și un id nou. Cu un @handle vezi și **Cereri către mine** și **Cereri trimise de mine prin @handle**.
+
+### Deschiderea unui link de plată fără aplicație {#pay-web}
+
+Pe un iPhone sau un telefon Android cu QoreX 1.2.5, un link `https://link.qore.network/pay?` deschide aplicația. Fără aplicație, afișează o pagină web, în engleză. Pagina verifică semnătura în browserul tău, inclusiv faptul că semnatarul deține adresa de primire, și refuză un link care nu trece verificarea, spunând motivul. Nu face cereri de rețea proprii ca să verifice sau să afișeze cererea și nu are instrumente de analiză sau cookie-uri. Pentru un link valid afișează suma, destinatarul, nota dacă există, eticheta din memo și rețeaua. Nu poate verifica un @handle: QoreX îl verifică în registru înainte să plătești. Pagina oferă:
+
+- **Open in QoreX**.
+- **Pay with Keplr**. Această opțiune nu trimite plata. Adaugă QoreChain în Keplr și afișează adresa ta din Keplr, cu butoane de copiat adresa destinatarului, suma și memo-ul. Nu îi cere lui Keplr să semneze, pentru că QoreChain cere la această plată o semnătură post-cuantică (hibridă), pe care Keplr nu o poate adăuga singur astăzi. Plătește în QoreX sau în alt portofel care semnează plăți QoreChain și păstrează memo-ul exact cum este.
+- **Pay with MetaMask** (doar QOR, pe lane-ul EVM). Contul din care plătești are nevoie mai întâi de o [fereastră de acces EVM](/qorex/browser-extension#evm-window), pe care o deschizi în QoreX; fără ea, rețeaua refuză plata. Semnătura MetaMask este clasică (secp256k1). O plată prin MetaMask nu poartă memo, așa că cererea **nu** este marcată automat ca plătită: anunță persoana care a cerut plata, care trebuie să o confirme manual.
 
 ## Contacte și favorite {#contacts}
 

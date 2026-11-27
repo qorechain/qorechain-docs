@@ -50,7 +50,7 @@ Instalează întotdeauna din una dintre aceste listări.
 ### Ce versiune este live unde {#versions}
 
 :::note
-Versiuni verificate pe 27 noiembrie 2026. Aplicațiile 1.2.5 pentru iPhone și Android și extensiile 0.4.5 pentru Chrome și Firefox sunt disponibile. Safari 1.8.2, care conține extensia 0.4.5, este în verificare la magazin: pe Safari, funcțiile pe care acest manual le descrie pentru 0.4.5 ajung la tine când Mac App Store oferă actualizarea. Pagina web a linkurilor de plată distribuite nu este încă online; linkurile se deschid în QoreX.
+Versiuni verificate pe 27 noiembrie 2026. Aplicațiile 1.2.5 pentru iPhone și Android și extensiile 0.4.5 pentru Chrome și Firefox sunt disponibile. Safari 1.8.2, care conține extensia 0.4.5, este în verificare la magazin: pe Safari, funcțiile pe care acest manual le descrie pentru 0.4.5 ajung la tine când Mac App Store oferă actualizarea. Pagina web a linkurilor de plată distribuite este online; vezi [Deschiderea unui link de plată fără aplicație](/qorex/send-and-receive#pay-web).
 :::
 
 Versiunea curentă din fiecare magazin:

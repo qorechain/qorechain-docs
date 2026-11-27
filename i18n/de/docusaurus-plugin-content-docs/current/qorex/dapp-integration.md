@@ -324,7 +324,7 @@ qorex://pay?v=1&net=qorechain-vladi&to=qor1...&amt=1500000&d=uqor&id=pr_...&tag=
 
 Ein Zahlungsanforderungs-Link trägt den Empfänger, den Betrag in Basiseinheiten, die Denomination, eine Anforderungs-ID und ihr Memo-Tag, eine optionale Notiz und ein @handle, das Netzwerk und eine Signatur des eigenen Kontoschlüssels des Empfängers über all das. Das QoreX des Zahlenden prüft die Signatur, dass der signierende Schlüssel die Empfängeradresse besitzt, das genaue Netzwerk und ein eventuelles @handle und zeigt dann vor dem Senden die normale Prüfansicht. Ein veränderter Betrag oder Empfänger wird erkannt, und die Anforderung wird durch Lesen der Chain als bezahlt markiert.
 
-**Erzeugen Sie ihn mit dem eigenen Anforderungsbildschirm von QoreX** (App, **Zahlungsanforderungen**, **Neue Anforderung**) statt von Hand: Die Signatur entsteht mit dem Kontoschlüssel, den eine Seite nie besitzt. Betrachten Sie einen selbst gebauten oder veränderten Link als nicht unterstützt. Eine Web-Form des Links ist noch nicht verfügbar.
+**Erzeugen Sie ihn mit dem eigenen Anforderungsbildschirm von QoreX** (App, **Zahlungsanforderungen**, **Neue Anforderung**) statt von Hand: Die Signatur entsteht mit dem Kontoschlüssel, den eine Seite nie besitzt. Betrachten Sie einen selbst gebauten oder veränderten Link als nicht unterstützt. Dieselbe Anforderung gibt es auch als Web-Form, `https://link.qore.network/pay?v=1&...`, mit denselben Parametern. Auf einem iPhone oder Android-Telefon mit QoreX 1.2.5 öffnet sie die App; sonst zeigt sie [die Webseite zur Zahlungsanforderung](/qorex/send-and-receive#pay-web).
 
 ### Einen Agentenvorschlag übergeben: `qorex://propose` {#link-propose}
 

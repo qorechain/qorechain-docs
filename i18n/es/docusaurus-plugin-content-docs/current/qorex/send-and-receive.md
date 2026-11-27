@@ -83,7 +83,7 @@ Pide a alguien una cantidad de QOR con un enlace firmado que compartes o copias.
 3. Toca **Crear enlace**. QoreX firma la solicitud con tu propia clave de cuenta y muestra *"Tu solicitud está lista. Cualquiera puede pagarla, en QoreX o en otra cartera."*
 4. **Compartir enlace** o **Copiar enlace**.
 
-El enlace se firma con tu clave de cuenta, así que se detecta un importe o una dirección modificados. La clave debe pertenecer a la dirección que recibe: nadie más puede volver a firmar en tu nombre un enlace alterado. La firma es solo una comprobación de integridad del enlace; el pago en sí lo firma normalmente quien paga, con la firma híbrida en el carril nativo. El formato del enlace es `qorex://pay?v=1&...` y nombra la red exacta (mainnet o testnet). Lo que obtienes con **Compartir enlace** y **Copiar enlace** es un enlace de pago que se abre en QoreX; empieza por `https://link.qore.network/pay?`.
+El enlace se firma con tu clave de cuenta, así que se detecta un importe o una dirección modificados. La clave debe pertenecer a la dirección que recibe: nadie más puede volver a firmar en tu nombre un enlace alterado. La firma es solo una comprobación de integridad del enlace; el pago en sí lo firma normalmente quien paga, con la firma híbrida en el carril nativo. El formato del enlace es `qorex://pay?v=1&...` y nombra la red exacta (mainnet o testnet). Lo que obtienes con **Compartir enlace** y **Copiar enlace** es un enlace de pago que se abre en QoreX; empieza por `https://link.qore.network/pay?`. Sin la app, el mismo enlace muestra una página web: consulta [Abrir un enlace de pago sin la app](#pay-web).
 
 El botón **Solicitar** de Inicio en la app pide a un usuario concreto de QoreX por su @handle (necesita [iniciar sesión](/qorex/account-and-dashboard#sign-in) y tu propio @handle). Una vez creada, esa solicitud también se puede compartir como enlace firmado.
 
@@ -99,6 +99,14 @@ Por ahora QoreX paga solicitudes solo en QOR. Una solicitud de testnet dice *"So
 **Seguir y reutilizar**
 
 **Mis solicitudes** enumera las solicitudes que creaste. Cada una muestra **Pagada** o **Aún no pagada**, leído de la cadena: QoreX busca un pago que coincida (la etiqueta de memo en la transferencia), y solo se marca como pagada cuando la cadena lo muestra. Si la red no responde dice *Estado desconocido*, nunca una suposición. **Comprobar estado** vuelve a preguntar. **Reutilizar el mes que viene** crea una solicitud nueva con los mismos datos y un id nuevo. Con un @handle también ves **Solicitudes para mí** y **Solicitudes que envié por @handle**.
+
+### Abrir un enlace de pago sin la app {#pay-web}
+
+En un iPhone o un teléfono Android con QoreX 1.2.5, un enlace `https://link.qore.network/pay?` abre la app. Sin la app, muestra una página web, en inglés. La página comprueba la firma en tu navegador, incluido que el firmante es dueño de la dirección de cobro, y rechaza un enlace que no la supere, indicando el motivo. No hace peticiones de red propias para comprobar o mostrar la solicitud, y no tiene analítica ni cookies. Con un enlace válido muestra el importe, el destinatario, la nota si la hay, la etiqueta del memo y la red. No puede comprobar un @handle: QoreX lo comprueba en el registro antes de que pagues. La página ofrece:
+
+- **Open in QoreX**.
+- **Pay with Keplr**. Esta opción no envía el pago. Añade QoreChain a Keplr y muestra tu dirección de Keplr, con botones para copiar la dirección del destinatario, el importe y el memo. No pide a Keplr que firme, porque QoreChain exige en este pago una firma poscuántica (híbrida) y hoy Keplr no puede añadirla por sí solo. Paga en QoreX o en otra wallet que firme pagos de QoreChain, y conserva el memo exactamente igual.
+- **Pay with MetaMask** (solo QOR, en el carril EVM). La cuenta desde la que pagas necesita antes una [ventana de acceso EVM](/qorex/browser-extension#evm-window) que abres en QoreX; sin ella la red rechaza el pago. La firma de MetaMask es clásica (secp256k1). Un pago con MetaMask no lleva memo, así que la solicitud **no** se marca como pagada automáticamente: avisa a quien la pidió, que tiene que confirmarlo a mano.
 
 ## Contactos y favoritos {#contacts}
 

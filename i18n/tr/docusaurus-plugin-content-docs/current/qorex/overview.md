@@ -142,7 +142,7 @@ Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza di�
 ## Hangi sürüm nerede canlı {#versions}
 
 :::note
-Sürümler 27 Kasım 2026 tarihinde kontrol edilmiştir. iPhone ve Android uygulamaları 1.2.5 ile Chrome ve Firefox eklentileri 0.4.5 yayında. 0.4.5 eklentisini içeren Safari 1.8.2 mağaza incelemesinde: Safari'de bu kılavuzun 0.4.5 için anlattığı özellikler, Mac App Store güncellemeyi sunduğunda gelir. Paylaşılan ödeme bağlantılarının web sayfası henüz yayında değil; bağlantılar QoreX'te açılır.
+Sürümler 27 Kasım 2026 tarihinde kontrol edilmiştir. iPhone ve Android uygulamaları 1.2.5 ile Chrome ve Firefox eklentileri 0.4.5 yayında. 0.4.5 eklentisini içeren Safari 1.8.2 mağaza incelemesinde: Safari'de bu kılavuzun 0.4.5 için anlattığı özellikler, Mac App Store güncellemeyi sunduğunda gelir. Paylaşılan ödeme bağlantılarının web sayfası yayında; bkz. [Uygulama olmadan ödeme bağlantısı açma](/qorex/send-and-receive#pay-web).
 :::
 
 Mağaza incelemesi kendi takvimine göre çalışır, bu yüzden bir mağaza bir süre diğerinden daha eski bir yapı sunabilir. Bu, **her mağazadaki** güncel sürümdür:

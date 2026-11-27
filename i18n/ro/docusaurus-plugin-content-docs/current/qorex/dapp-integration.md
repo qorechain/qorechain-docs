@@ -324,7 +324,7 @@ qorex://pay?v=1&net=qorechain-vladi&to=qor1...&amt=1500000&d=uqor&id=pr_...&tag=
 
 Un link de cerere de plată poartă destinatarul, suma în unități de bază, denominația, un id de cerere și eticheta lui din memo, o notă opțională și un @handle, rețeaua și o semnătură cu cheia proprie a contului destinatarului peste toate acestea. QoreX-ul plătitorului verifică semnătura, că cheia de semnare deține adresa destinatarului, rețeaua exactă și orice @handle, apoi arată verificarea obișnuită înainte de trimitere. O sumă sau un destinatar modificat este detectat, iar cererea este marcată plătită prin citirea lanțului.
 
-**Generează-l cu ecranul de cerere propriu al QoreX** (aplicație, **Cereri de plată**, **Cerere nouă**), nu manual: semnătura se face cu cheia contului, pe care o pagină nu o deține niciodată. Consideră neacceptat un link pe care îl construiești sau îl modifici tu. O formă web a linkului nu este încă disponibilă.
+**Generează-l cu ecranul de cerere propriu al QoreX** (aplicație, **Cereri de plată**, **Cerere nouă**), nu manual: semnătura se face cu cheia contului, pe care o pagină nu o deține niciodată. Consideră neacceptat un link pe care îl construiești sau îl modifici tu. Aceeași cerere are și o formă web, `https://link.qore.network/pay?v=1&...`, cu aceiași parametri. Pe un iPhone sau un telefon Android cu QoreX 1.2.5 deschide aplicația; în rest afișează [pagina web a cererii de plată](/qorex/send-and-receive#pay-web).
 
 ### Predă o propunere de la un agent: `qorex://propose` {#link-propose}
 

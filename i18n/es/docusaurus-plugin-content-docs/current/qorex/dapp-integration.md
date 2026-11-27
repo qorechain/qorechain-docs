@@ -324,7 +324,7 @@ qorex://pay?v=1&net=qorechain-vladi&to=qor1...&amt=1500000&d=uqor&id=pr_...&tag=
 
 Un enlace de solicitud de pago lleva el destinatario, el importe en unidades base, la denominación, un id de solicitud y su etiqueta de memo, una nota y un @handle opcionales, la red y una firma de todo ello con la propia clave de cuenta del destinatario. El QoreX del pagador comprueba la firma, que la clave firmante sea dueña de la dirección del destinatario, la red exacta y cualquier @handle, y luego muestra la revisión normal antes de enviar. Un importe o un destinatario alterados se detectan, y la solicitud se marca como pagada leyendo la cadena.
 
-**Genéralo con la propia pantalla de solicitudes de QoreX** (app, **Solicitudes de pago**, **Nueva solicitud**) en lugar de a mano: la firma se hace con la clave de la cuenta, que una página nunca tiene. Considera no admitido un enlace que construyas o modifiques tú mismo. Todavía no hay una forma web del enlace.
+**Genéralo con la propia pantalla de solicitudes de QoreX** (app, **Solicitudes de pago**, **Nueva solicitud**) en lugar de a mano: la firma se hace con la clave de la cuenta, que una página nunca tiene. Considera no admitido un enlace que construyas o modifiques tú mismo. La misma solicitud tiene también una forma web, `https://link.qore.network/pay?v=1&...`, con los mismos parámetros. En un iPhone o un teléfono Android con QoreX 1.2.5 abre la app; en los demás casos muestra [la página web de la solicitud de pago](/qorex/send-and-receive#pay-web).
 
 ### Entregar una propuesta de agente: `qorex://propose` {#link-propose}
 

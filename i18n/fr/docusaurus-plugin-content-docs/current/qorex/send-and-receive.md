@@ -83,7 +83,7 @@ Demandez à quelqu'un un montant en QOR avec un lien signé que vous partagez ou
 3. Touchez **Créer le lien**. QoreX signe la demande avec la clé de votre propre compte et affiche *"Your request is ready. Anyone can pay it, in QoreX or in another wallet."* (votre demande est prête ; tout le monde peut la payer, dans QoreX ou dans un autre portefeuille).
 4. **Partager le lien** ou **Copier le lien**.
 
-Le lien est signé avec la clé de votre compte ; un montant ou une adresse modifiés sont donc détectés. La clé doit appartenir à l'adresse de réception : personne d'autre ne peut re-signer en votre nom un lien altéré. La signature est uniquement un contrôle d'intégrité du lien ; le paiement lui-même est signé normalement par le payeur, avec la signature hybride sur la voie native. Le format du lien est `qorex://pay?v=1&...` et il désigne le réseau exact (mainnet ou testnet). **Partager le lien** et **Copier le lien** vous donnent un lien de paiement qui s'ouvre dans QoreX ; il commence par `https://link.qore.network/pay?`.
+Le lien est signé avec la clé de votre compte ; un montant ou une adresse modifiés sont donc détectés. La clé doit appartenir à l'adresse de réception : personne d'autre ne peut re-signer en votre nom un lien altéré. La signature est uniquement un contrôle d'intégrité du lien ; le paiement lui-même est signé normalement par le payeur, avec la signature hybride sur la voie native. Le format du lien est `qorex://pay?v=1&...` et il désigne le réseau exact (mainnet ou testnet). **Partager le lien** et **Copier le lien** vous donnent un lien de paiement qui s'ouvre dans QoreX ; il commence par `https://link.qore.network/pay?`. Sans l'application, le même lien affiche une page web : voir [Ouvrir un lien de paiement sans l'application](#pay-web).
 
 Le bouton **Demander** sur l'accueil de l'application sollicite un utilisateur QoreX précis par son @handle (il nécessite la [connexion](/qorex/account-and-dashboard#sign-in) et votre propre @handle). Une fois créée, cette demande peut aussi être partagée sous forme de lien signé.
 
@@ -99,6 +99,14 @@ Pour l'instant, QoreX ne paie les demandes qu'en QOR. Une demande du testnet ind
 **Suivre et réutiliser**
 
 **Mes demandes** liste les demandes que vous avez créées. Chacune affiche **Payée** ou **Pas encore payée**, d'après la chaîne : QoreX recherche un paiement correspondant (l'étiquette du mémo sur le transfert), et la demande n'est marquée comme payée que lorsque la chaîne le montre. Si le réseau ne répond pas, il indique *Status unknown* (statut inconnu), jamais une supposition. **Vérifier le statut** interroge à nouveau. **Réutiliser le mois prochain** crée une nouvelle demande avec les mêmes détails et un nouvel identifiant. Avec un @handle, vous voyez aussi **Demandes qui me sont adressées** et **Demandes envoyées par @handle**.
+
+### Ouvrir un lien de paiement sans l'application {#pay-web}
+
+Sur un iPhone ou un téléphone Android avec QoreX 1.2.5, un lien `https://link.qore.network/pay?` ouvre l'application. Sans l'application, il affiche une page web, en anglais. La page vérifie la signature dans votre navigateur, y compris que le signataire possède l'adresse de réception, et refuse un lien qui échoue, en donnant la raison. Elle n'émet aucune requête réseau de son propre chef pour vérifier ou afficher la demande, et n'a ni outil d'analyse ni cookies. Pour un lien valide, elle affiche le montant, le destinataire, la note éventuelle, l'étiquette du mémo et le réseau. Elle ne peut pas vérifier un @handle : QoreX le vérifie dans le registre avant que vous payiez. La page propose :
+
+- **Open in QoreX**.
+- **Pay with Keplr**. Cette option n'envoie pas le paiement. Elle ajoute QoreChain à Keplr et affiche votre adresse Keplr, avec des boutons pour copier l'adresse du destinataire, le montant et le mémo. Elle ne demande pas à Keplr de signer, car QoreChain exige pour ce paiement une signature post-quantique (hybride) que Keplr ne peut pas ajouter seul aujourd'hui. Payez dans QoreX ou dans un autre portefeuille qui signe les paiements QoreChain, et reprenez le mémo à l'identique.
+- **Pay with MetaMask** (QOR uniquement, sur la voie EVM). Le compte qui paie a d'abord besoin d'une [fenêtre d'accès EVM](/qorex/browser-extension#evm-window) que vous ouvrez dans QoreX ; sans elle, le réseau refuse le paiement. La signature de MetaMask est classique (secp256k1). Un paiement MetaMask ne porte pas de mémo : la demande n'est donc **pas** marquée comme payée automatiquement. Prévenez le demandeur, qui doit la confirmer à la main.
 
 ## Contacts et favoris {#contacts}
 

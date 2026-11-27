@@ -82,7 +82,7 @@ Birinden paylaşacağınız veya kopyalayacağınız imzalı bir bağlantıyla b
 3. **Bağlantı oluştur**'a dokunun. QoreX isteği kendi hesap anahtarınızla imzalar ve *"İsteğiniz hazır. Herkes QoreX'te veya başka bir cüzdanda ödeyebilir."* mesajını gösterir.
 4. **Bağlantıyı paylaş** veya **Bağlantıyı kopyala** seçeneğini kullanın.
 
-Bağlantı hesap anahtarınızla imzalanır, bu yüzden değiştirilmiş bir tutar veya adres algılanır. Anahtar, alıcı adrese ait olmalıdır: başka hiç kimse değiştirilmiş bir bağlantıyı sizin adınıza yeniden imzalayamaz. İmza yalnızca bağlantı üzerinde bir bütünlük kontrolüdür; ödemenin kendisi ödeyen tarafından normal şekilde, native lane'de hibrit imzayla imzalanır. Bağlantı biçimi `qorex://pay?v=1&...` şeklindedir ve tam ağı (mainnet veya testnet) adıyla belirtir. **Bağlantıyı paylaş** ve **Bağlantıyı kopyala** size QoreX'te açılan bir ödeme bağlantısı verir; bağlantı `https://link.qore.network/pay?` ile başlar.
+Bağlantı hesap anahtarınızla imzalanır, bu yüzden değiştirilmiş bir tutar veya adres algılanır. Anahtar, alıcı adrese ait olmalıdır: başka hiç kimse değiştirilmiş bir bağlantıyı sizin adınıza yeniden imzalayamaz. İmza yalnızca bağlantı üzerinde bir bütünlük kontrolüdür; ödemenin kendisi ödeyen tarafından normal şekilde, native lane'de hibrit imzayla imzalanır. Bağlantı biçimi `qorex://pay?v=1&...` şeklindedir ve tam ağı (mainnet veya testnet) adıyla belirtir. **Bağlantıyı paylaş** ve **Bağlantıyı kopyala** size QoreX'te açılan bir ödeme bağlantısı verir; bağlantı `https://link.qore.network/pay?` ile başlar. Uygulama yoksa aynı bağlantı bir web sayfası gösterir: bkz. [Uygulama olmadan ödeme bağlantısı açma](#pay-web).
 
 Uygulamanın Ana Sayfa ekranındaki **İste** düğmesi, belirli bir QoreX kullanıcısından @handle'ı ile istekte bulunur ([oturum açma](/qorex/account-and-dashboard#sign-in) ve kendi @handle'ınız gerekir). Oluşturulan bu istek imzalı bir bağlantı olarak da paylaşılabilir.
 
@@ -98,6 +98,14 @@ QoreX şimdilik istekleri yalnızca QOR ile öder. Bir testnet isteği *"Testnet
 **İzleme ve yeniden kullanma**
 
 **İsteklerim**, oluşturduğunuz istekleri listeler. Her biri zincirden okunan **Ödendi** veya **Henüz ödenmedi** durumunu gösterir: QoreX eşleşen bir ödeme arar (transferdeki memo etiketi) ve istek yalnızca zincir bunu gösterdiğinde ödendi olarak işaretlenir. Ağ yanıt vermezse tahmin yürütmez, *Durum bilinmiyor* der. **Durumu kontrol et** yeniden sorar. **Gelecek ay yeniden kullan**, aynı ayrıntılar ve yeni bir kimlikle yeni bir istek oluşturur. Bir @handle'ınız varsa **Bana gelen istekler** ve **@handle ile gönderdiğim istekler** bölümlerini de görürsünüz.
+
+### Uygulama olmadan ödeme bağlantısı açma {#pay-web}
+
+QoreX 1.2.5 yüklü bir iPhone veya Android telefonda `https://link.qore.network/pay?` bağlantısı uygulamayı açar. Uygulama yoksa İngilizce bir web sayfası gösterir. Sayfa, imzalayanın alıcı adresin sahibi olduğu dahil, imzayı tarayıcınızda doğrular ve doğrulamayı geçemeyen bağlantıyı nedenini belirterek reddeder. İsteği doğrulamak veya göstermek için kendi ağ isteği göndermez; analiz aracı ve çerez kullanmaz. Geçerli bir bağlantı için tutarı, alıcıyı, varsa notu, memo etiketini ve ağı gösterir. Bir @handle'ı doğrulayamaz: siz ödemeden önce QoreX onu kayıt defterinden kontrol eder. Sayfa şunları sunar:
+
+- **Open in QoreX**.
+- **Pay with Keplr**. Bu seçenek ödemeyi göndermez. QoreChain'i Keplr'a ekler ve Keplr adresinizi gösterir; alıcı adresini, tutarı ve memo'yu kopyalama düğmeleri sunar. Keplr'dan imza istemez, çünkü QoreChain bu ödemede kuantum sonrası (hibrit) bir imza şart koşar ve Keplr bugün bunu tek başına ekleyemez. QoreX'te ya da QoreChain ödemelerini imzalayabilen başka bir cüzdanda ödeyin ve memo'yu aynen koruyun.
+- **Pay with MetaMask** (yalnızca QOR, EVM şeridinde). Ödeme yaptığınız hesabın önce QoreX'te açtığınız bir [EVM erişim penceresine](/qorex/browser-extension#evm-window) ihtiyacı vardır; o olmadan ağ ödemeyi reddeder. MetaMask imzası klasiktir (secp256k1). MetaMask ödemesi memo taşımaz, bu yüzden istek otomatik olarak ödendi **işaretlenmez**: isteği oluşturana haber verin, elle onaylaması gerekir.
 
 ## Kişiler ve favoriler {#contacts}
 
