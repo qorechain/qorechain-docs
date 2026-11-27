@@ -72,6 +72,7 @@ Süreler, araçlar kurulduktan sonraki adımlar içindir. Araçları ilk kez kur
 | [Workshop 1 kılavuzu](/build-before-qday/workshop-1) | Başlangıç | TypeScript, Solidity | 30 dakika | İskeletini oluşturduğunuz, test ettiğiniz ve testnet'e dağıttığınız bir proje ve zincirde doğrulanmış bir hibrit imzalı işlem. |
 | [Workshop 2 kılavuzu](/build-before-qday/workshop-2) | Orta | Solidity, TypeScript, Node.js | 75 dakika | Yalnızca post-kuantum bir imzaya karşı ödeme yapan bir kasa, harcama limitlerini zincirin uyguladığı bir ajan ve MCP ile zincire yöneltilen salt okunur sorular. |
 | [Workshop 3 kılavuzu](/build-before-qday/workshop-3) | İleri | Node.js, Solidity, Rust | 70 dakika | Yalnızca sahibinin açabildiği, post-kuantum şifrelemeyle bir `qor1...` adresine şifrelenmiş bir mesaj ve bir Native kontrata yazan, ya hep ya hiç çalışan tek bir EVM işlemi. |
+| [Workshop 4 kılavuzu](/build-before-qday/workshop-4) | Uzman | Node.js | 45 dakika, artı bir saatlik bekleme | Bir para çekmeyi ödeyen ve hile yaptığında teminatını kaybeden bir rollup, Cosmos Hub testnet'ine gönderilip geri getirilen QOR ve QoreX geliştirici araçları. Rollup bölümü daha büyük bir testnet tahsisi gerektirir. |
 | [Q-Day Counter](/build-before-qday/workshop-1/apps/qday-counter) | Başlangıç | TypeScript, Solidity | 25 dakika | Testnet'te, hibrit imzalı bir akışla artırdığınız bir sayaç kontratı. |
 | [Q-Day Guestbook](/build-before-qday/workshop-1/apps/qday-guestbook) | Orta | TypeScript, Solidity, React | 45 dakika | Kendi zincir üstü misafir defteriniz ve QoreX cüzdanından imzaladığınız bir web sayfası. |
 | [Hybrid Inspector](/build-before-qday/workshop-1/apps/hybrid-inspector) | Başlangıç | TypeScript, React | 25 dakika | QoreX'ten QOR gönderen ve her iki imzayı ile zincirin kararını gösteren bir web sayfası. |
@@ -99,13 +100,13 @@ Her eğitim aynı yapıyı izler: **Başlamadan önce**, numaralı adımlar (her
 ## Nereden başlamalı {#where-to-start}
 
 1. [Başlamadan önce](/build-before-qday/prerequisites) sayfasını okuyun ve ilk eğitiminiz için araçları kurun.
-2. Testnet üzerinde [Workshop 1 kılavuzunu](/build-before-qday/workshop-1) izleyin. Ardından [Workshop 2 kılavuzunu](/build-before-qday/workshop-2) ve [Workshop 3 kılavuzunu](/build-before-qday/workshop-3) izleyin.
+2. Testnet üzerinde [Workshop 1 kılavuzunu](/build-before-qday/workshop-1) izleyin. Ardından [Workshop 2 kılavuzunu](/build-before-qday/workshop-2), [Workshop 3 kılavuzunu](/build-before-qday/workshop-3) ve [Workshop 4 kılavuzunu](/build-before-qday/workshop-4) izleyin.
 3. Yukarıdaki tablodan örnek uygulamalardan birini deneyin.
 4. QoreChain'e hiç dağıtım yapmadıysanız, [5 Dakikada Dağıtım](/getting-started/deploy-in-5-minutes) fikri ayrıntılı açıklar. Uygulamaların arkasındaki kitler [Kitler](/build-before-qday/workshop-1/kits) sayfasındadır.
 
 ## Kod {#code}
 
-Tüm örnek uygulamalar tek bir herkese açık depoda, `workshop-1`, `workshop-2` ve `workshop-3` klasörlerindedir: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Her eğitim hangi klasörü açacağınızı söyler. Kodu bir kez şu komutla alın:
+Tüm örnek uygulamalar tek bir herkese açık depoda, `workshop-1`, `workshop-2`, `workshop-3` ve `workshop-4` klasörlerindedir: [github.com/qorechain/build-before-qday](https://github.com/qorechain/build-before-qday). Her eğitim hangi klasörü açacağınızı söyler. Kodu bir kez şu komutla alın:
 
 ```bash
 git clone https://github.com/qorechain/build-before-qday
